@@ -1,9 +1,9 @@
-// By NitrogenCynic, with additions by Hilimii
+// By NitrogenCynic (https://www.speedrun.com/users/NitrogenCynic), with additions by Hilimii (https://www.speedrun.com/users/Hilimii)
 state("ProjectWingman-Win64-Shipping")
 {
-    byte inGame: "ProjectWingman-Win64-Shipping.exe", 0x9124420; //1 when in game, 0 when in menu
-    byte missionComplete: "ProjectWingman-Win64-Shipping.exe", 0x093EFDC8, 0x0, 0x438; //2 normally, 3 when mission complete trigger has been activated found by: https://www.speedrun.com/users/Hilimii
-    byte isPaused: "ProjectWingman-Win64-Shipping.exe", 0x95C00C4; //2 when unpaused, 3 when paused
+    byte inGame: "ProjectWingman-Win64-Shipping.exe", 0x9124420; //1 when in game, 0 when in menu. Found by NitrogenCynic
+    byte missionComplete: "ProjectWingman-Win64-Shipping.exe", 0x093EFDC8, 0x0, 0x438; //2 normally, 3 when mission complete trigger has been activated found by Hilimii
+    byte isPaused: "ProjectWingman-Win64-Shipping.exe", 0x95C00C4; //2 when unpaused, 3 when paused. Found by NitrogenCynic
 }
 
 startup
