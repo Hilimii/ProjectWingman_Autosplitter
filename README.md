@@ -25,3 +25,5 @@ This is disabled by default.
 This only works for Vanilla runs. Does not work for the F59 DLC.
 # Pausing Stops Timer
 Pauses your timer whenever you pause the game during a mission.
+
+Requires you to be comparing against Game Time in Livesplit in order for this to work.
