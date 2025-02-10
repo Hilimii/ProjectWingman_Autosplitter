@@ -1,2 +1,2 @@
 # ProjectWingman_Autosplitter
-Autosplitter for Project Wingman made by NitrogenCynic and Hilimod
+Autosplitter for Project Wingman made by NitrogenCynic and Hilimii
