@@ -1,4 +1,5 @@
-// By NitrogenCynic (https://www.speedrun.com/users/NitrogenCynic), with additions by Hilimii (https://www.speedrun.com/users/Hilimii)
+// Version: 1.0.0
+// By NitrogenCynic (https://www.speedrun.com/users/NitrogenCynic) and Hilimii (https://www.speedrun.com/users/Hilimii)
 state("ProjectWingman-Win64-Shipping")
 {
     byte inGame: "ProjectWingman-Win64-Shipping.exe", 0x9124420; //1 when in game, 0 when in menu. Found by NitrogenCynic
@@ -55,7 +56,7 @@ isLoading
     // Note that isLoading only works when comparing to Game Time in Livesplit. RTA splits will cause this functionality to cease.
     if( current.isPaused == 3 && settings["EnablePause"] == true )
         { return true;
-    } 
+    }
     else{
         return false;
     }
