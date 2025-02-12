@@ -1,10 +1,11 @@
-// Version: 1.0.0
+// Version: 1.0.1
 // By NitrogenCynic (https://www.speedrun.com/users/NitrogenCynic) and Hilimii (https://www.speedrun.com/users/Hilimii)
 state("ProjectWingman-Win64-Shipping")
 {
     byte inGame: "ProjectWingman-Win64-Shipping.exe", 0x9124420; //1 when in game, 0 when in menu. Found by NitrogenCynic
     byte missionComplete: "ProjectWingman-Win64-Shipping.exe", 0x093EFDC8, 0x0, 0x438; //2 normally, 3 when mission complete trigger has been activated. Found by Hilimii
     byte isPaused: "ProjectWingman-Win64-Shipping.exe", 0x95C00C4; //2 when unpaused, 3 when paused. Found by NitrogenCynic
+    byte playerRef: "ProjectWingman-Win64-Shipping.exe", 0x95C3A28, 0x118, 0x320; // Reference to the player FlyingPawn, 0 when undefined (as in menus).
 
     // A useful root object for finding a number of other in-game objects and variables.
     // WingmanInstance: "ProjectWingman-Win64-Shipping.exe", 0x9150ED0, 0x0, 0x180;
@@ -50,19 +51,20 @@ startup
 
 reset
 {
-    //Reset timer when missionComplete transitions from 3 (complete) to 2 (default state).
-    //Mission mode only.
-    return (current.inGame == 0 && old.inGame == 1 && settings["Mission"] == true);
+    // Reset timer when playerRef is dereferenced (goes from defined to undefined).
+    // Mission mode only.
+    return (current.playerRef == 0 && old.playerRef != 0 && settings["Mission"] == true);
 }
 
 start
 {
     // Mission mode only
-        // Start the timer when inGame transitions from 0 (menu) to 1 (in mission)
+        // Start the timer when playerRef transitions from undefined (menu) to defined (in mission)
     return
-    (current.inGame == 1 && old.inGame == 0 && settings["Mission"] == true) ||
+    (current.playerRef != 0 && old.playerRef == 0 && settings["Mission"] == true) ||
     // Campaign mode only
-        //Start the timer when the player selects difficulty and enters the first loading screen. For some reason, InGame = 1 in the vanilla main menu, so we can use this to start the campaign run by watching when it turns from 1 to 0.
+        // Start the timer when the player selects difficulty and enters the first loading screen. For some reason, InGame = 1 in the vanilla main menu, so we can use this to start the campaign run by watching when it turns from 1 to 0.
+        // TODO: use a different variable to start this timer, possibly WingmanInstance.LevelSequenceStage
     (current.inGame == 0 && old.inGame == 1 && settings["CampaignStarter"] == true);
 }
 split
