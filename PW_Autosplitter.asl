@@ -43,8 +43,8 @@ startup
         // Does not automatically start timer, unfortunately not possible with our current variables
         // Does not reset automatically, again not possible with current variables.
         // Automatically splits once at the end of each mission (only if you complete it)
-    settings.Add("CampaignStarter", false, "Campaign Auto Starter (Vanilla Only)", "Campaign");
-        // Enables auto starting in campaign mode, specifically when entering the first loading screen after selecting difficulty. This can proc every time the player returns to menu, hence being annoying and worth turning off.
+    settings.Add("CampaignStarter", false, "Campaign Auto Starter (Vanilla)", "Campaign");
+        // Enables auto starting in campaign mode, specifically when entering the first loading screen after selecting difficulty.
     settings.Add("EnablePause",true,"Pausing Stops Timer");
         // Enables functionality for pausing the timer when the player pauses the game
 }
@@ -59,13 +59,21 @@ reset
 start
 {
     // Mission mode only
-        // Start the timer when playerRef transitions from undefined (menu) to defined (in mission)
+    // Start the timer when playerRef transitions from undefined (menu) to defined (in mission)
     return
-    (current.playerRef != 0 && old.playerRef == 0 && settings["Mission"] == true) ||
+    (
+        current.playerRef != 0 &&
+        old.playerRef == 0 &&
+        settings["Mission"] == true
+    ) ||
     // Campaign mode only
-        // Start the timer when the player selects difficulty and enters the first loading screen. For some reason, InGame = 1 in the vanilla main menu, so we can use this to start the campaign run by watching when it turns from 1 to 0.
-        // TODO: use a different variable to start this timer, possibly WingmanInstance.LevelSequenceStage
-    (current.inGame == 0 && old.inGame == 1 && settings["CampaignStarter"] == true);
+    // Start the timer when the player selects difficulty and enters the first loading screen.
+    (
+        current.onMissionSequence == 1 &&
+        old.onMissionSequence == 0 &&
+        current.onFreeMission == 0 && // the free mission flag may still be set when starting a campaign mission, but should flip to 0 after difficulty selection
+        settings["CampaignStarter"] == true
+    );
 }
 split
 {
