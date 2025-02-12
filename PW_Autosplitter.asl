@@ -5,6 +5,27 @@ state("ProjectWingman-Win64-Shipping")
     byte inGame: "ProjectWingman-Win64-Shipping.exe", 0x9124420; //1 when in game, 0 when in menu. Found by NitrogenCynic
     byte missionComplete: "ProjectWingman-Win64-Shipping.exe", 0x093EFDC8, 0x0, 0x438; //2 normally, 3 when mission complete trigger has been activated. Found by Hilimii
     byte isPaused: "ProjectWingman-Win64-Shipping.exe", 0x95C00C4; //2 when unpaused, 3 when paused. Found by NitrogenCynic
+
+    // A useful root object for finding a number of other in-game objects and variables.
+    // WingmanInstance: "ProjectWingman-Win64-Shipping.exe", 0x9150ED0, 0x0, 0x180;
+    byte levelSequencePhase: "ProjectWingman-Win64-Shipping.exe", 0x9150ED0, 0x0, 0x180, 0x999; // Level Sequence Phase
+    // Enumerator for the current stage of the level
+        // useful values:
+        // 0 = PreStagingCutscene - MainMenu/Level Selection
+        // 1 = Briefing
+        // 2 = Staging -- Menu Before 'Start Mission' Button
+        // 3 = Hangar
+        // 4 = Takeoff
+        // 5 = PreMissionCutscene
+        // 6 = Mission
+        // 7 = PostMissionCutscene
+        // 8 = Landing
+        // 9 = Debrief
+        // 10 = PostDebriefCutscene
+    byte onMissionSequence: "ProjectWingman-Win64-Shipping.exe", 0x9150ED0, 0x0, 0x180, 0x99B; // On Mission Sequence - True while in a 'Mission Sequence'
+        // Triggers after a difficulty has been selected, once the player transitions from LevelSequencePhase 0 to 1 (Briefing)
+    byte onFreeMission: "ProjectWingman-Win64-Shipping.exe", 0x9150ED0, 0x0, 0x180, 0x99A; // On Free Mission - True when in a free mission - Applicable to ILs
+
 }
 
 startup
