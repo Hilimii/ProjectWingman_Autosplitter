@@ -10,8 +10,8 @@ Download the main .asl file. In Livesplit, edit your layout and add a scriptable
 When editing your splits in LiveSplit, if you have Project Wingman selected as your game you will be able to activate the most recent release of the Autosplitter.
 
 ## Known Issues That May Inconvenience You
-### Autostart Broken on Three Missions
-Mission Mode does not automatically start your timer on the following missions:
+### Autostart/Autoreset Broken on Three Missions
+Mission Mode does not automatically start your timer or reset on the following missions:
 * M11 Coldwar
 * M12 Midnight Light
 * M19 Red Sea
