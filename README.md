@@ -9,9 +9,8 @@ Download the main .asl file. In Livesplit, edit your layout and add a scriptable
 ### LiveSplit
 When editing your splits in LiveSplit, if you have Project Wingman selected as your game you will be able to activate the most recent release of the Autosplitter.
 
-## Known Issues That May Inconvenience You
-### Timer Starting in Main Menu on Campaign Mode
-You may notice your timer autostarting whenever you launch the game or return to the main menu, this is due to a limitation with a value currently being used.
+## Issues
+See: https://github.com/Hilimii/ProjectWingman_Autosplitter/issues for currently known issues.
 
 # Options
 In Livesplit you can choose from the following options in the autosplitter:
@@ -23,10 +22,9 @@ In Livesplit you can choose from the following options in the autosplitter:
 ## Campaign Mode
 * Autosplits once at the end of each mission.
 * No autoreset functionality.
-### Campaign Mode - Campaign Auto Starter (Vanilla Only)
+### Campaign Mode - Campaign Auto Starter
 * Autostarts the timer when you pick your difficulty and leave the lowest level main menu.
 * This is disabled by default.
-* This only works for Vanilla runs. Does not work for the F59 DLC.
 ## Pausing Stops Timer
 * Pauses your timer whenever you pause the game during a mission.
 * Requires you to be comparing against Game Time in Livesplit in order for this to work.
