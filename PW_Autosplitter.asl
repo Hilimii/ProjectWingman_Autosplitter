@@ -40,7 +40,7 @@ start
     // Mission mode only
         // Start the timer when playerRef transitions from undefined (menu) to defined (in mission)
     return
-    (current.playerRef == 1 && old.playerRef == 0 && settings["Mission"] == true) ||
+    (current.playerRef != 0 && old.playerRef == 0 && settings["Mission"] == true) ||
     // Campaign mode only
         // Start the timer when the player selects difficulty and enters the first loading screen. For some reason, InGame = 1 in the vanilla main menu, so we can use this to start the campaign run by watching when it turns from 1 to 0.
         // TODO: use a different variable to start this timer, possibly WingmanInstance.LevelSequenceStage
