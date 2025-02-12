@@ -1,4 +1,4 @@
-// Version: 1.0.1
+// Version: 1.0.2
 // By NitrogenCynic (https://www.speedrun.com/users/NitrogenCynic) and Hilimii (https://www.speedrun.com/users/Hilimii)
 state("ProjectWingman-Win64-Shipping")
 {
@@ -35,15 +35,15 @@ startup
         // Has no functionality other than to give directions to the user and contain the two operating modes under a single title
     settings.Add("Mission", true, "Mission Mode", "ModeWrapper");
     // Mission mode has the following properties:
-        // Starts timer when inGame changes to 1
+        // Starts timer when playerRef transitions from undefined to defined (in mission)
         // Resets timer when the player resets the level. If the player completes a run, they must reset manually
         // Automatically splits once upon the mission ending
     settings.Add("Campaign", false, "Campaign Mode", "ModeWrapper");
     // Campaign mode has the following properties:
-        // Does not automatically start timer, unfortunately not possible with our current variables
+        // May automatically start timer on difficulty select, if the option is enabled.
         // Does not reset automatically, again not possible with current variables.
         // Automatically splits once at the end of each mission (only if you complete it)
-    settings.Add("CampaignStarter", false, "Campaign Auto Starter (Vanilla)", "Campaign");
+    settings.Add("CampaignStarter", false, "Campaign Auto Starter", "Campaign");
         // Enables auto starting in campaign mode, specifically when entering the first loading screen after selecting difficulty.
     settings.Add("EnablePause",true,"Pausing Stops Timer");
         // Enables functionality for pausing the timer when the player pauses the game
