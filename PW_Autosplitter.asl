@@ -30,7 +30,7 @@ startup
 
 reset
 {
-    // Reset timer when missionComplete transitions from 3 (complete) to 2 (default state).
+    // Reset timer when playerRef is dereferenced (goes from defined to undefined).
     // Mission mode only.
     return (current.playerRef == 0 && old.playerRef != 0 && settings["Mission"] == true);
 }
