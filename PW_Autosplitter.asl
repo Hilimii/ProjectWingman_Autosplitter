@@ -26,7 +26,7 @@ state("ProjectWingman-Win64-Shipping")
     byte onMissionSequence: "ProjectWingman-Win64-Shipping.exe", 0x9150ED0, 0x0, 0x180, 0x99B; // On Mission Sequence - True while in a 'Mission Sequence'
         // Triggers after a difficulty has been selected, once the player transitions from LevelSequencePhase 0 to 1 (Briefing)
     byte onFreeMission: "ProjectWingman-Win64-Shipping.exe", 0x9150ED0, 0x0, 0x180, 0x99A; // On Free Mission - True when in a free mission - Applicable to ILs
-    double ProgramUptime: "ProjectWingman-Win64-Shipping.exe", 0x957481C // A pure measurement in seconds of how long the game has been open
+    double programUptime: "ProjectWingman-Win64-Shipping.exe", 0x957481C // A pure measurement in seconds of how long the game has been open
 }
 
 startup
@@ -80,7 +80,8 @@ start
     (
         current.onMissionSequence == 1 &&
         old.onMissionSequence == 0 &&
-        current.onFreeMission == 0 // the free mission flag may still be set when starting a campaign mission, but should flip to 0 after difficulty selection
+        current.onFreeMission == 0  && // the free mission flag may still be set when starting a campaign mission, but should flip to 0 after difficulty selection
+        settings["Campaign"] == true
     );
 }
 split
@@ -104,7 +105,7 @@ isLoading
         (
         current.onMissionSequence == 0
         &&
-        settings["CrashCrasher"] == false // I don't know why, but this needs to be false for it to work.
+        settings["CrashCatcher"] == true
         )
     )
     {
