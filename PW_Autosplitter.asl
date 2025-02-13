@@ -31,6 +31,7 @@ state("ProjectWingman-Win64-Shipping")
 
 startup
 {
+    // Settings
     settings.Add("ModeWrapper", true, "Mode Selector: Pick One");
         // Has no functionality other than to give directions to the user and contain the two operating modes under a single title
     settings.Add("Mission", true, "Mission Mode", "ModeWrapper");
@@ -49,6 +50,25 @@ startup
         // Enables a feature that triggers isLoading if the current scene is defined and has progressed beyond the main menu (!= 0)
     settings.Add("EnablePause",true,"Pausing Stops Timer");
         // Enables functionality for pausing the timer when the player pauses the game
+
+    // Variables
+    vars.isClosed = true; //Set isClosed to true when Livesplit first launches
+    print(vars.isClosed.ToString());
+
+}
+
+init
+{
+    // Set isClosed to false when the game is detected as running
+    vars.isClosed = false;
+    print(vars.isClosed.ToString());
+}
+
+exit
+{
+    // Set isClosed to true when the game shuts down
+    vars.isClosed = true;
+    print(vars.isClosed.ToString());
 }
 
 reset
@@ -103,9 +123,10 @@ isLoading
         ||
         // Crash / softlock protection. Pauses the timer if the current mission sequence is 0, i.e. either undefined and or not progressed further than difficulty selection in Campaign Mode.
         (
-        current.onMissionSequence == 0
-        &&
-        settings["CrashCatcher"] == true
+        //current.onMissionSequence == 0
+        vars.isClosed == true  // Checks if the game is closed and attempts to pause the timer if true
+        //&&
+        //settings["CrashCatcher"] == true
         )
     )
     {
@@ -116,3 +137,7 @@ isLoading
         return false;
     }
 }
+ update
+ {
+    print(vars.isClosed.ToString());
+ }
