@@ -1,4 +1,4 @@
-// Version: 1.0.2
+// Version: 1.0.3
 // By NitrogenCynic (https://www.speedrun.com/users/NitrogenCynic) and Hilimii (https://www.speedrun.com/users/Hilimii)
 state("ProjectWingman-Win64-Shipping")
 {
@@ -38,10 +38,12 @@ startup
         // Starts timer when playerRef transitions from undefined to defined (in mission)
         // Resets timer when the player resets the level. If the player completes a run, they must reset manually
         // Automatically splits once upon the mission ending
+    settings.Add("IgnoreTakeoff", true, "Autostart Ignores Takeoff Sequence", "Mission");
+        // When true, tells the Start function to ignore takeoff sequences whilst in Mission Mode
     settings.Add("Campaign", false, "Campaign Mode", "ModeWrapper");
     // Campaign mode has the following properties:
-        // May automatically start timer on difficulty select, if the option is enabled.
-        // Does not reset automatically, again not possible with current variables.
+        // Automatically starts timer on difficulty select.
+        // Does not reset automatically
         // Automatically splits once at the end of each mission (only if you complete it)
     settings.Add("CampaignStarter", false, "Campaign Auto Starter", "Campaign");
         // Enables auto starting in campaign mode, specifically when entering the first loading screen after selecting difficulty.
@@ -64,7 +66,14 @@ start
     (
         current.playerRef != 0 &&
         old.playerRef == 0 &&
-        settings["Mission"] == true
+        settings["Mission"] == true &&
+            // Takeoff culling:
+            // XNOR That only returns true if IgnoreTakeoff = true and levelSequencePhase != 4 (not takeoff), or if IgnoreTakeoff = false and LevelSequencePase = 4 (takeoff) 
+            (
+            current.levelSequencePhase != 4
+            ==
+            settings["IgnoreTakeoff"] == true
+            )
     ) ||
     // Campaign mode only
     // Start the timer when the player selects difficulty and enters the first loading screen.
