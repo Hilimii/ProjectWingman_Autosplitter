@@ -87,7 +87,22 @@ start
 split
 {
     // Trigger a split when missionComplete transitions from 2 (not complete) to 3 (mission complete)
-    return current.missionComplete == 3 && old.missionComplete == 2;
+    return
+    (
+        current.missionComplete == 3
+        &&
+        old.missionComplete == 2
+    )
+    ||
+        // King Fix. Triggers a split when transitioning to a post mission cutscene ONLY when missionComplete didn't change to 3. This stops Wayback triggering a false positive.
+    (
+        current.levelSequencePhase == 7
+        &&
+        old.levelSequencePhase == 6
+        &&
+        current.missionComplete == 2
+    )
+    ;
 }
 
 isLoading
