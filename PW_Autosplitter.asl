@@ -1,4 +1,4 @@
-// Version: 1.0.3 (Previous Version) 1.1.0 (Potential New Version)
+// Version: 1.1.0
 // By NitrogenCynic (https://www.speedrun.com/users/NitrogenCynic) and Hilimii (https://www.speedrun.com/users/Hilimii)
 
 //Added in this version:
