@@ -201,6 +201,7 @@ isLoading
 update
 {
     if
+    // Check when the game is unpaused. If true, set pauseGrace to maximum (15 ticks)
     (
         current.isPaused == 2
         &&
@@ -212,6 +213,7 @@ update
     }
 
     if
+    // Check if the game is unpaused, and if pauseGrace is more than 0. If true reduce pauseGrace by 1 each tick until it hits zero.
     (
         current.isPaused == 2
         &&
@@ -223,6 +225,7 @@ update
     }
 
     if
+    // Failsafe for if pauseGrace drops below 0, thereby setting it to 0 (default state). This shouldn't happen.
     (
         vars.pauseGrace < 0
     )
