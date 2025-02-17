@@ -1,4 +1,5 @@
-// Version: 1.0.3
+// Version: 1.0.4
+
 // By NitrogenCynic (https://www.speedrun.com/users/NitrogenCynic) and Hilimii (https://www.speedrun.com/users/Hilimii)
 state("ProjectWingman-Win64-Shipping")
 {
