@@ -26,11 +26,14 @@ state("ProjectWingman-Win64-Shipping")
     byte onMissionSequence: "ProjectWingman-Win64-Shipping.exe", 0x9150ED0, 0x0, 0x180, 0x99B; // On Mission Sequence - True while in a 'Mission Sequence'
         // Triggers after a difficulty has been selected, once the player transitions from LevelSequencePhase 0 to 1 (Briefing)
     byte onFreeMission: "ProjectWingman-Win64-Shipping.exe", 0x9150ED0, 0x0, 0x180, 0x99A; // On Free Mission - True when in a free mission - Applicable to ILs
-
+    float HUDSpeed: "ProjectWingman-Win64-Shipping.exe", 0x95AC140, 0x30, 0xC58, 0x4F8, 0x5EC; // Denotes the current speed of the player's speed as shown by the HUD. Generally either zero or freezes at current value when not in use.
+        // Note that this takes on a value as donated by the units which the player has set in their options (knots or Kph)
+    float processUptime: "ProjectWingman-Win64-Shipping.exe", 0x957481C; // A pure measurement in seconds of how long the game has been open
 }
 
 startup
 {
+    // Settings
     settings.Add("ModeWrapper", true, "Mode Selector: Pick One");
         // Has no functionality other than to give directions to the user and contain the two operating modes under a single title
     settings.Add("Mission", true, "Mission Mode", "ModeWrapper");
@@ -49,6 +52,14 @@ startup
         // Enables auto starting in campaign mode, specifically when entering the first loading screen after selecting difficulty.
     settings.Add("EnablePause",true,"Pausing Stops Timer");
         // Enables functionality for pausing the timer when the player pauses the game
+    // Autosplitter settings
+    refreshRate = 30; // Lowers autosplitter refresh rate. I found that on 60Hz the 'ProcessUptime' pointer would give duplicate time values on 'old' and 'current', thereby tricking causality into = false
+    
+    // Variables
+    vars.pauseGrace = 0;
+        // Variable for tracking a grace peroid after unpausing. Relevant to Faust fix.
+    vars.faustSplit = false;
+        // Variable for tracking if we have triggered a Faust split.
 }
 
 reset
@@ -82,8 +93,10 @@ start
         old.onMissionSequence == 0 &&
         current.onFreeMission == 0 && // the free mission flag may still be set when starting a campaign mission, but should flip to 0 after difficulty selection
         settings["CampaignStarter"] == true
-    );
+    )
+    ;
 }
+
 split
 {
     // Trigger a split when missionComplete transitions from 2 (not complete) to 3 (mission complete)
@@ -102,7 +115,75 @@ split
         &&
         current.missionComplete == 2
     )
+    ||
+    // Faust Fix
+    // This is a very convoluted bandaid fix, beware reading this. The logic below defines the very specific circumstances in which M6 Faust ends, thereby triggering a split
+    // I don't know if ALL of this logic is required, but I did it to be safe.
+    (
+        current.levelSequencePhase == 6
+         // First check is if we're in a misson (=6)
+        &&
+        (
+            current.HUDSpeed
+            ==
+            old.HUDSpeed
+        )
+         // Second check is if the player's speed is currently static. When M6 Faust ends, player speed is frozen.
+        &&
+        current.HUDSpeed != 0
+        // Third check is if speed is not zero. This helps to rule out takeoff sequences like in F59 M1 BotB
+        &&
+        current.isPaused == 2
+        // Fourth check is if we're not paused. Otherwise pausing would satisfy logic.
+        &&
+        current.playerRef != 0
+        // Fifth check is if the player is spawned in. When Faust ends, the player remains spawned in until the title screen ends. This check allows us rule out most other mission endings, especially Kings.
+        &
+        current.missionComplete == 2
+        // Sixth check is if missionComplete = 2 (not complete), this rules out every mission except Kings and Faust.
+        &&
+        vars.pauseGrace == 0
+        // Seventh check is if pauseGrace is not active.
+            // Pause grace is important because pausing the game will active a split using the current logic.
+            // This is because briefly, when unpausing, the game stands still, giving several frames where speed is static and not zero, thus satisfying logic.
+            // Pause grace is turned on for 0.5s (15 ticks at 30Hz) whenever the player unpauses to stop this happening.
+        &&
+        vars.faustSplit == false
+           // Eighth check is if we have already triggered a split using the above logic. Stops repeat splits every tick in the unlikely event that a player wants to run vanilla + F59 together, starting with F59.
+    )
     ;
+}
+
+onSplit
+{
+    // Faust logic
+    // Read the above Faust fix for context. This repeats the same logic to identify when a Faust split happens.
+    // When Faust split does happen, faustsplit is set to true so it can't happen again. Otherwise, it would split again every tick.
+    if
+    (
+        current.levelSequencePhase == 6
+        &&
+        (
+            current.HUDSpeed
+            ==
+            old.HUDSpeed
+        )
+        &&
+        current.HUDSpeed != 0
+        &&
+        current.isPaused == 2
+        &&
+        current.playerRef != 0
+        &
+        current.missionComplete == 2
+        &&
+        vars.pauseGrace == 0
+    )
+    {
+        vars.faustSplit = true
+    ;
+    }
+    
 }
 
 isLoading
@@ -114,5 +195,39 @@ isLoading
     }
     else{
         return false;
+    }
+}
+
+update
+{
+    if
+    (
+        current.isPaused == 2
+        &&
+        old.isPaused == 3
+    )
+    {
+        vars.pauseGrace = 15
+        ;
+    }
+
+    if
+    (
+        current.isPaused == 2
+        &&
+        vars.pauseGrace > 0
+    )
+    {
+        vars.pauseGrace = vars.pauseGrace - 1
+        ;
+    }
+
+    if
+    (
+        vars.pauseGrace < 0
+    )
+    {
+        vars.pauseGrace = 0
+        ;
     }
 }
