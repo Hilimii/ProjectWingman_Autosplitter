@@ -88,6 +88,8 @@ start
 
 init{
 
+
+// TODO: Find a reliable way to read mission names, so we can error trap these functions.
 // Returns True when the mission Kings in the main campaign is complete.
 // Rules consider this to be completion of the fadeout after Crimson 1.
 vars.KingsSplit = (Func<bool>)(()=>
