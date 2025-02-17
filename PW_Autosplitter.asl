@@ -1,15 +1,11 @@
-// Version: 1.0.4
+// Version: 1.0.3 (Previous Version) 1.1.0 (Potential New Version)
 // By NitrogenCynic (https://www.speedrun.com/users/NitrogenCynic) and Hilimii (https://www.speedrun.com/users/Hilimii)
 
 //Added in this version:
-    //Added processUptime pointer for tracking when the game is open
     //Removed Campaign autostart option. This was a legacy feature that is no longer needed
-    // Added 'causality' and 'crashed' variables to help with crash protection
     // Redueced refresh rate from 60 to 30 Hz
-    // Added basic and advanced crash protection settings, both under the new crash heading setting which has been moved out from under 'Campaign' for visibilty
-    // Added exit event to track 'crashed'
-    // Added update event to determine when to adjust the state of 'crashed' and 'causality'
-    // Added basic and advanced crash protection logic to 'isLoading'.
+    // Added Crash Protection under Campaign settings
+    // Added Crash Protection logic to isLoading
     
 state("ProjectWingman-Win64-Shipping")
 {
@@ -19,7 +15,7 @@ state("ProjectWingman-Win64-Shipping")
     byte playerRef: "ProjectWingman-Win64-Shipping.exe", 0x95C3A28, 0x118, 0x320; // Reference to the player FlyingPawn, 0 when undefined (as in menus).
 
     // A useful root object for finding a number of other in-game objects and variables.
-    // WingmanInstance: "ProjectWingman-Win64-Shipping.exe", 0x9150ED0, 0x0, 0x180;
+    //byte WingmanInstance: "ProjectWingman-Win64-Shipping.exe", 0x9150ED0, 0x0, 0x180;
     byte levelSequencePhase: "ProjectWingman-Win64-Shipping.exe", 0x9150ED0, 0x0, 0x180, 0x999; // Level Sequence Phase
     // Enumerator for the current stage of the level
         // useful values:
@@ -37,51 +33,53 @@ state("ProjectWingman-Win64-Shipping")
     byte onMissionSequence: "ProjectWingman-Win64-Shipping.exe", 0x9150ED0, 0x0, 0x180, 0x99B; // On Mission Sequence - True while in a 'Mission Sequence'
         // Triggers after a difficulty has been selected, once the player transitions from LevelSequencePhase 0 to 1 (Briefing)
     byte onFreeMission: "ProjectWingman-Win64-Shipping.exe", 0x9150ED0, 0x0, 0x180, 0x99A; // On Free Mission - True when in a free mission - Applicable to ILs
-    float processUptime: "ProjectWingman-Win64-Shipping.exe", 0x957481C // A pure measurement in seconds of how long the game has been open
 }
 
 startup
 {
-    // Settings
+    // User Settings
     settings.Add("ModeWrapper", true, "Mode Selector: Pick One");
         // Has no functionality other than to give directions to the user and contain the two operating modes under a single title
+        settings.SetToolTip("ModeWrapper", "Select only one mode at a time. They don't conflict, but having the wrong mode turned on will cause splits and timer resets at unwanted times");
     settings.Add("Mission", true, "Mission Mode", "ModeWrapper");
     // Mission mode has the following properties:
         // Starts timer when playerRef transitions from undefined to defined (in mission)
         // Resets timer when the player resets the level. If the player completes a run, they must reset manually
         // Automatically splits once upon the mission ending
-    settings.Add("IgnoreTakeoff", true, "Autostart Ignores Takeoff Sequence", "Mission");
-        // When true, tells the Start function to ignore takeoff sequences whilst in Mission Mode
+        settings.SetToolTip("Mission", "For running IL categories using Free Mission Mode. Autostarts after pressing start, autosplits once upon mission end, and resets when you restart the level");
+        settings.Add("IgnoreTakeoff", true, "Autostart Ignores Takeoff Sequence", "Mission");
+            // When true, tells the Start function to ignore takeoff sequences whilst in Mission Mode
+            settings.SetToolTip("IgnoreTakeoff", "Your timer will no longer auto-start in takeoff sequences before missions");
     settings.Add("Campaign", false, "Campaign Mode", "ModeWrapper");
     // Campaign mode has the following properties:
         // Automatically starts timer on difficulty select.
         // Does not reset automatically
         // Automatically splits once at the end of each mission (only if you complete it)
-    settings.Add("CrashOptions", true, "Crash Protection Options: Select one or both");
-        // Heading to contain crash protection options
-    settings.Add("BasicCrashProtection", false, "Basic Crash Protection", "CrashOptions");
-        // Basic crash option. Stops the timer if the game is closed.
-    settings.Add("AdvancedCrashProtection",true, "Advanced Crash Protection", "CrashOptions");
+        settings.SetToolTip("Campaign", "For running full playthrough categories using campaign mode. Autostarts upon difficulty selection, and splits once at the end of each mission");
+        settings.Add("CrashProtection", false, "Crash Protection", "Campaign");
+            // Basic crash option. Stops the timer if the game is closed.
+                settings.SetToolTip("CrashProtection", "Pauses the timer if you have not progressed beyond difficulty selection. If your game crashes, your timer will be paused until you select 'Resume' to continue a campaign run.");
     settings.Add("EnablePause",true,"Pausing Stops Timer");
         // Enables functionality for pausing the timer when the player pauses the game
+        settings.SetToolTip("EnablePause", "Pauses your timer whenever you pause during a mission. No effect outside of missions.");
 
-    // Variables
-    vars.causality = false; // Variable for detecting if processUptime is ticking upwards
-    refreshRate = 30; // Lowers autosplitter refresh rate. I found that on 60Hz the 'ProcessUptime' pointer would give duplicate time values on 'old' and 'current', thereby tricking causality into = false
-    vars.crashed = false; // Defines 'crashed'. Default state is false because we only need it do something if the game crashes. Assume not needed until needed.
-}
-
-exit
-{
-    // Crashing tracking. If the game process ends for any reason, 'crashed' is set to true. See 'update' for polar case where 'crashed' = false.
-    vars.crashed = true;
+    // AutoSplitter settings
+    refreshRate = 30; // Lowers autosplitter refresh rate. At 60Hz, at least on my end (Hilimii), some ticks give repeated values in debug, thereby tricking logic into believing nothing has changed, when it should have.
 }
 
 reset
 {
     // Reset timer when playerRef is dereferenced (goes from defined to undefined).
     // Mission mode only.
-    return (current.playerRef == 0 && old.playerRef != 0 && settings["Mission"] == true);
+    return
+    (
+        current.playerRef == 0
+        &&
+        old.playerRef != 0
+        &&
+        settings["Mission"] == true
+    )
+    ;
 }
 
 start
@@ -127,22 +125,11 @@ isLoading
             settings["EnablePause"] == true
         )
         ||
-        // Basic crash detection. Pauses the timer if causality = false i.e. processUptime is not ticking up
+        // Crash detection. Pauses timer if the player has not progressed beyond difficulty selection (onMissionSequence = 0)
         (
-            current.causality == false
+            current.onMissionSequence == 0
             &&
-            (
-                settings["BasicCrashProtection"] == true
-                ||
-                settings["AdvancedCrashProtection"] == true
-            )
-        )
-        ||
-        // Advanced crash detection. Pauses timer if crashed = true. Crashed is only set to false after the player advances beyond difficulty selection.
-        (
-            vars.crashed == true
-            &&
-            settings["AdvancedCrashProtection"] == true
+            settings["CrashProtection"] == true
         )
     )
     {
@@ -153,31 +140,3 @@ isLoading
         return false;
     }
 }
- update
- {
-    // Causality tracking
-        // Resource intensive but currently the cleanest way I can find to do it
-        // Checks on each update if 'processUptime' has ticked up. Sets 'causality' to true if so, false otherwise.
-    if
-    (
-        current.processUptime == old.processUptime
-    )
-    {
-        current.causality = false;
-    }
-    else
-    {
-        current.causality = true;
-    }
-    // Advanced Crash restoration tracking
-        // If the player advances upon difficulty selection in Campaign mode, 'crashed' is set to false. This should facilitate the timer unpausing.
-    if
-    (
-        current.onMissionSequence == 1
-        &&
-        old.onMissionSequence == 0
-    )
-    {
-        vars.crashed = false;
-    }
- }
