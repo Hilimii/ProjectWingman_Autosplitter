@@ -26,7 +26,7 @@ state("ProjectWingman-Win64-Shipping")
     byte onMissionSequence: "ProjectWingman-Win64-Shipping.exe", 0x9150ED0, 0x0, 0x180, 0x99B; // On Mission Sequence - True while in a 'Mission Sequence'
         // Triggers after a difficulty has been selected, once the player transitions from LevelSequencePhase 0 to 1 (Briefing)
     byte onFreeMission: "ProjectWingman-Win64-Shipping.exe", 0x9150ED0, 0x0, 0x180, 0x99A; // On Free Mission - True when in a free mission - Applicable to ILs
-
+    byte controllerPawn: "ProjectWingman-Win64-Shipping.exe", 0x95AC140, 0x30, 0x250; // Reference to the WingmanPlayerController.Pawn
 }
 
 startup
@@ -68,7 +68,7 @@ start
         old.playerRef == 0 &&
         settings["Mission"] == true &&
             // Takeoff culling:
-            // XNOR That only returns true if IgnoreTakeoff = true and levelSequencePhase != 4 (not takeoff), or if IgnoreTakeoff = false and LevelSequencePase = 4 (takeoff) 
+            // XNOR That only returns true if IgnoreTakeoff = true and levelSequencePhase != 4 (not takeoff), or if IgnoreTakeoff = false and LevelSequencePase = 4 (takeoff)
             (
             current.levelSequencePhase != 4
             ==
@@ -84,10 +84,35 @@ start
         settings["CampaignStarter"] == true
     );
 }
+
+init{
+
+// Returns True when the mission Kings in the main campaign is complete.
+// Rules consider this to be completion of the fadeout after Crimson 1.
+vars.KingsSplit = (Func<bool>)(()=>
+    {
+        return  current.levelSequencePhase == 7 && old.levelSequencePhase == 6 && current.missionComplete == 2;
+    }
+);
+
+// Returns True when the mission Faust in Frontline 59 is complete.
+// Rules consider this to be when the Frontline 59 logo cutscene starts.
+vars.FaustSplit = (Func<bool>)(() =>
+    {
+        return (
+            current.levelSequencePhase == 6 &&
+            current.missionComplete != 3 &&
+            current.playerRef != 0 &&
+            (current.controllerPawn != current.playerRef) // During the logo cutscene, the WingmanPlayerController.Pawn is swapped from a FlyingPawn to a MF59Ending pawn
+        );
+    }
+);
+}
+
 split
 {
-    // Trigger a split when missionComplete transitions from 2 (not complete) to 3 (mission complete)
-    return current.missionComplete == 3 && old.missionComplete == 2;
+    // Trigger a split when missionComplete transitions from 2 to 3 (for most missions) or at the end of Kings or Faust.
+    return (current.missionComplete == 3 && old.missionComplete == 2) || vars.FaustSplit() || vars.KingsSplit();
 }
 
 isLoading
