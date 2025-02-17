@@ -69,12 +69,6 @@ reset
     return (current.playerRef == 0 && old.playerRef != 0 && settings["Mission"] == true);
 }
 
-onReset
-{
-    // Sets faust split (has it happened yet?) to false upon a reset.
-    vars.faustSplit = false;
-}
-
 start
 {
     // Mission mode only
@@ -150,9 +144,9 @@ split
         &&
         vars.pauseGrace == 0
         // Seventh check is if pauseGrace is not active.
-            // Pause grace is important because unpausing the game will activate a split using the current logic.
+            // Pause grace is important because pausing the game will active a split using the current logic.
             // This is because briefly, when unpausing, the game stands still, giving several frames where speed is static and not zero, thus satisfying logic.
-            // Pause grace is turned on for 0.5s (15 ticks at 30Hz) whenever the player unpauses, thereby stopping splits from happening.
+            // Pause grace is turned on for 0.5s (15 ticks at 30Hz) whenever the player unpauses to stop this happening.
         &&
         vars.faustSplit == false
            // Eighth check is if we have already triggered a split using the above logic. Stops repeat splits every tick in the unlikely event that a player wants to run vanilla + F59 together, starting with F59.
