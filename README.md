@@ -19,12 +19,16 @@ In Livesplit you can choose from the following options in the autosplitter:
 * Autostarts the timer when gameplay begins, this is approximately 1.00s after pressing start to begin the mission.
 * Autosplits once at the end of the mission when 'Mission Complete' appears on the screen.
 * Autoresets every time you reset the mission. This will not work if you have completed a run and you haven't saved/cleared your splits.
+### Autostart Ignores Takeoff Sequence
+* Prevents the timer from automatically starting when beginning a takeoff sequence on any mission.
 ## Campaign Mode
 * Autosplits once at the end of each mission.
+* Autostarts when you select your difficulty to begin the campaign.
 * No autoreset functionality.
-### Campaign Mode - Campaign Auto Starter
-* Autostarts the timer when you pick your difficulty and leave the lowest level main menu.
-* This is disabled by default.
+### Campaign Mode - Crash Protection
+* Pauses your timer if you have not progressed beyond difficulty selection.
+* If your game crashes, your timer will be paused until you select 'Resume' to continue your campaign run.
+* Requires you to be comparing against Game Time in Livesplit in order for this to work.
 ## Pausing Stops Timer
 * Pauses your timer whenever you pause the game during a mission.
 * Requires you to be comparing against Game Time in Livesplit in order for this to work.
