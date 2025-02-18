@@ -86,36 +86,39 @@ start
     );
 }
 
-init{
+init
+{
+    // TODO: Find a reliable way to read mission names, so we can error trap these functions.
+    // Returns True when the mission Kings in the main campaign is complete.
+    // Rules consider this to be completion of the fadeout after Crimson 1.
+    vars.KingsSplit = (Func<byte, byte, byte, bool>)((currPhase, oldPhase, missionComplete)=>
+        {
+            return  currPhase == 7 && oldPhase == 6 && missionComplete == 2;
+        }
+    );
 
-
-// TODO: Find a reliable way to read mission names, so we can error trap these functions.
-// Returns True when the mission Kings in the main campaign is complete.
-// Rules consider this to be completion of the fadeout after Crimson 1.
-vars.KingsSplit = (Func<bool>)(()=>
-    {
-        return  current.levelSequencePhase == 7 && old.levelSequencePhase == 6 && current.missionComplete == 2;
-    }
-);
-
-// Returns True when the mission Faust in Frontline 59 is complete.
-// Rules consider this to be when the Frontline 59 logo cutscene starts.
-vars.FaustSplit = (Func<bool>)(() =>
-    {
-        return (
-            current.levelSequencePhase == 6 &&
-            current.missionComplete != 3 &&
-            current.playerRef != 0 &&
-            (current.controllerPawn != current.playerRef) // During the logo cutscene, the WingmanPlayerController.Pawn is swapped from a FlyingPawn to a MF59Ending pawn
-        );
-    }
-);
+    // Returns True when the mission Faust in Frontline 59 is complete.
+    // Rules consider this to be when the Frontline 59 logo cutscene starts.
+    vars.FaustSplit = (Func<byte, byte, byte, byte, bool>)((currPhase, missionComplete, playerRef, controllerPawn) =>
+        {
+            return (
+                current.levelSequencePhase == 6 &&
+                current.missionComplete != 3 &&
+                current.playerRef != 0 &&
+                (current.controllerPawn != current.playerRef) // During the logo cutscene, the WingmanPlayerController.Pawn is swapped from a FlyingPawn to a MF59Ending pawn
+            );
+        }
+    );
 }
 
 split
 {
     // Trigger a split when missionComplete transitions from 2 to 3 (for most missions) or at the end of Kings or Faust.
-    return (current.missionComplete == 3 && old.missionComplete == 2) || vars.FaustSplit() || vars.KingsSplit();
+    return (
+        (current.missionComplete == 3 && old.missionComplete == 2) ||
+        vars.FaustSplit(current.levelSequencePhase, current.missionComplete, current.playerRef, current.controllerPawn) ||
+        vars.KingsSplit(current.levelSequencePhase, old.levelSequencePhase, current.missionComplete)
+    );
 }
 
 isLoading
