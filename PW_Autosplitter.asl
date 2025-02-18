@@ -25,7 +25,7 @@ state("ProjectWingman-Win64-Shipping")
         // 9 = Debrief
         // 10 = PostDebriefCutscene
     byte onMissionSequence: "ProjectWingman-Win64-Shipping.exe", 0x9150ED0, 0x0, 0x180, 0x99B; // On Mission Sequence - True while in a 'Mission Sequence'
-        // Triggers after a difficulty has been selected, once the player transitions from LevelSequencePhase 0 to 1 (Briefing)
+    // Triggers after a difficulty has been selected, once the player transitions from LevelSequencePhase 0 to 1 (Briefing)
     byte onFreeMission: "ProjectWingman-Win64-Shipping.exe", 0x9150ED0, 0x0, 0x180, 0x99A; // On Free Mission - True when in a free mission - Applicable to ILs
     byte controllerPawn: "ProjectWingman-Win64-Shipping.exe", 0x95AC140, 0x30, 0x250; // Reference to the WingmanPlayerController.Pawn
 }
