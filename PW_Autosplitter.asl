@@ -55,6 +55,7 @@ reset
 {
     // Reset timer when playerRef is dereferenced (goes from defined to undefined).
     // Mission mode only.
+    // Consider using the LoadingManager.IntoLevel property. 1 when in loading, 0 when not.
     return (current.playerRef == 0 && old.playerRef != 0 && settings["Mission"] == true);
 }
 
@@ -87,7 +88,6 @@ start
 
 init
 {
-    // TODO: Find a reliable way to read mission names, so we can error trap these functions.
     // Returns True when the mission Kings in the main campaign is complete.
     // Rules consider this to be completion of the fadeout after Crimson 1.
     vars.KingsSplit = (Func<byte, byte, byte, bool>)((currPhase, oldPhase, missionComplete) =>
