@@ -83,7 +83,7 @@ start
 {
     vars.beatKings = false;
     vars.beatFaust = false;
-    
+
     // Mission mode only
     // Start the timer when playerRef transitions from undefined (menu) to defined (in mission)
     return
@@ -129,16 +129,16 @@ init
     vars.FaustSplit = (Func<bool>)(() =>
         {
             var gameBase = modules.First().BaseAddress;
-            print("Game Base: " + gameBase.ToString("X"));
             var expectedOffset = 0x8550; // Extracted from the MF59Ending address pattern
 
             var controllerPawnPtr = new DeepPointer("ProjectWingman-Win64-Shipping.exe", 0x95AC140, 0x30, 0x250);
             var pawnClassPtr = controllerPawnPtr.Deref<IntPtr>(game);
             var pawnClass = game.ReadPointer(pawnClassPtr);
-            print("Pawn Class: " + pawnClass.ToString("X"));
 
             var relativeOffset = (long)pawnClass - (long)gameBase;
-            print("Relative Offset: " + relativeOffset.ToString("X"));
+
+            // Debug in case this ever breaks
+            // print("Relative Offset: " + relativeOffset.ToString("X"));
 
             // Check that the relative offset ends with 8550
             if ((relativeOffset & 0xFFFF) == expectedOffset)
