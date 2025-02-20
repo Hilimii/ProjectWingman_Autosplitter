@@ -81,6 +81,9 @@ reset
 
 start
 {
+    vars.beatKings = false;
+    vars.beatFaust = false;
+    
     // Mission mode only
     // Start the timer when playerRef transitions from undefined (menu) to defined (in mission)
     return
@@ -112,7 +115,12 @@ init
     // Rules consider this to be completion of the fadeout after Crimson 1.
     vars.KingsSplit = (Func<byte, byte, byte, bool>)((currPhase, oldPhase, missionComplete) =>
         {
-            return  currPhase == 7 && oldPhase == 6 && missionComplete == 2;
+            if (currPhase == 7 && oldPhase == 6 && missionComplete == 2)
+            {
+                vars.beatKings = true;
+                return true;
+            };
+            return false;
         }
     );
 
@@ -133,7 +141,12 @@ init
             print("Relative Offset: " + relativeOffset.ToString("X"));
 
             // Check that the relative offset ends with 8550
-            return (relativeOffset & 0xFFFF) == expectedOffset;
+            if ((relativeOffset & 0xFFFF) == expectedOffset)
+            {
+                vars.beatFaust = true;
+                return true;
+            };
+            return false;
         }
     );
 
@@ -153,10 +166,10 @@ init
 split
 {
     // Trigger a split when missionComplete transitions from 2 to 3 (for most missions) or at the end of Kings or Faust.
-    if (vars.GetLevelID() == "mf_06"){
+    if (vars.GetLevelID() == "mf_06" && !vars.beatFaust){
          return vars.FaustSplit();
         }
-    else if (vars.GetLevelID() == "campaign_22"){
+    else if (vars.GetLevelID() == "campaign_22" && !vars.beatKings){
         return vars.KingsSplit(current.levelSequencePhase, old.levelSequencePhase, current.missionComplete);
     }
     else{
