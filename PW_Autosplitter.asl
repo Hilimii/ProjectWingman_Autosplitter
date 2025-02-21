@@ -52,7 +52,7 @@ startup
         // Automatically starts timer on difficulty select.
         // Does not reset automatically
         // Automatically splits once at the end of each mission (only if you complete it)
-        settings.SetToolTip("Campaign", "For running full playthrough categories using campaign mode. Autostarts upon difficulty selection, and splits once at the end of each mission");
+        settings.SetToolTip("Campaign", "For running full playthrough categories using campaign mode. Autostarts upon difficulty selection, splits once at the end of each mission, and resets when starting a new campaign");
         settings.Add("CrashProtection", false, "Crash Protection", "Campaign");
             // Basic crash option. Stops the timer if the game is closed.
                 settings.SetToolTip("CrashProtection", "Pauses the timer if you have not progressed beyond difficulty selection. If your game crashes, your timer will be paused until you select 'Resume' to continue a campaign run.");
