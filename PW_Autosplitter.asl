@@ -1,8 +1,8 @@
-// Version: 1.1.1
+// Version: 1.1.2
 // By NitrogenCynic (https://www.speedrun.com/users/NitrogenCynic) and Hilimii (https://www.speedrun.com/users/Hilimii)
 
 // Added in this version:
-    // Split detection for Faust and Kings
+    // Campaign reset functionality
 
 state("ProjectWingman-Win64-Shipping")
 {
