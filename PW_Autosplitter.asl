@@ -171,14 +171,11 @@ init
 split
 {
     // Trigger a split when missionComplete transitions from 2 to 3 (for most missions) or at the end of Kings or Faust.
-    print("Level" + vars.GetLevelID());
-    print("Tunnel Run Split" + settings["TunnelRun"]);
     if (vars.GetLevelID() == "mf_06" && !vars.beatFaust){
          return vars.FaustSplit();
         }
     else if (vars.GetLevelID() == "mf_04" && settings["TunnelRun"] == true){
-
-        return (old.playerPawnTargetList < 20 && current.playerPawnTargetList > 30); // 50 units spawn at the end of the tunnel run
+        return (current.playerPawnTargetList > 30); // 50 units spawn at the end of the tunnel run
     }
     else if (vars.GetLevelID() == "campaign_22" && !vars.beatKings){
         return vars.KingsSplit(current.levelSequencePhase, old.levelSequencePhase, current.missionComplete);
