@@ -1,12 +1,9 @@
-// Version: 1.1.0
+// Version: 1.1.1
 // By NitrogenCynic (https://www.speedrun.com/users/NitrogenCynic) and Hilimii (https://www.speedrun.com/users/Hilimii)
 
-//Added in this version:
-    //Removed Campaign autostart option. This was a legacy feature that is no longer needed
-    // Redueced refresh rate from 60 to 30 Hz
-    // Added Crash Protection under Campaign settings
-    // Added Crash Protection logic to isLoading
-    
+// Added in this version:
+    // Split detection for Faust and Kings
+
 state("ProjectWingman-Win64-Shipping")
 {
     byte inGame: "ProjectWingman-Win64-Shipping.exe", 0x9124420; //1 when in game, 0 when in menu. Found by NitrogenCynic
@@ -31,7 +28,7 @@ state("ProjectWingman-Win64-Shipping")
         // 9 = Debrief
         // 10 = PostDebriefCutscene
     byte onMissionSequence: "ProjectWingman-Win64-Shipping.exe", 0x9150ED0, 0x0, 0x180, 0x99B; // On Mission Sequence - True while in a 'Mission Sequence'
-        // Triggers after a difficulty has been selected, once the player transitions from LevelSequencePhase 0 to 1 (Briefing)
+    // Triggers after a difficulty has been selected, once the player transitions from LevelSequencePhase 0 to 1 (Briefing)
     byte onFreeMission: "ProjectWingman-Win64-Shipping.exe", 0x9150ED0, 0x0, 0x180, 0x99A; // On Free Mission - True when in a free mission - Applicable to ILs
 }
 
@@ -84,6 +81,9 @@ reset
 
 start
 {
+    vars.beatKings = false;
+    vars.beatFaust = false;
+
     // Mission mode only
     // Start the timer when playerRef transitions from undefined (menu) to defined (in mission)
     return
@@ -92,7 +92,7 @@ start
         old.playerRef == 0 &&
         settings["Mission"] == true &&
             // Takeoff culling:
-            // XNOR That only returns true if IgnoreTakeoff = true and levelSequencePhase != 4 (not takeoff), or if IgnoreTakeoff = false and LevelSequencePase = 4 (takeoff) 
+            // XNOR That only returns true if IgnoreTakeoff = true and levelSequencePhase != 4 (not takeoff), or if IgnoreTakeoff = false and LevelSequencePase = 4 (takeoff)
             (
                 current.levelSequencePhase != 4
                 ==
@@ -104,14 +104,77 @@ start
     (
         current.onMissionSequence == 1 &&
         old.onMissionSequence == 0 &&
-        current.onFreeMission == 0  && // the free mission flag may still be set when starting a campaign mission, but should flip to 0 after difficulty selection
+        current.onFreeMission == 0 && // the free mission flag may still be set when starting a campaign mission, but should flip to 0 after difficulty selection
         settings["Campaign"] == true
     );
 }
+
+init
+{
+    // Returns True when the mission Kings in the main campaign is complete.
+    // Rules consider this to be completion of the fadeout after Crimson 1.
+    vars.KingsSplit = (Func<byte, byte, byte, bool>)((currPhase, oldPhase, missionComplete) =>
+        {
+            if (currPhase == 7 && oldPhase == 6 && missionComplete == 2)
+            {
+                vars.beatKings = true;
+                return true;
+            };
+            return false;
+        }
+    );
+
+    // Returns True when the mission Faust in Frontline 59 is complete.
+    // Rules consider this to be when the Frontline 59 logo cutscene starts.
+    vars.FaustSplit = (Func<bool>)(() =>
+        {
+            var gameBase = modules.First().BaseAddress;
+            var expectedOffset = 0x8550; // Extracted from the MF59Ending address pattern
+
+            var controllerPawnPtr = new DeepPointer("ProjectWingman-Win64-Shipping.exe", 0x95AC140, 0x30, 0x250);
+            var pawnClassPtr = controllerPawnPtr.Deref<IntPtr>(game);
+            var pawnClass = game.ReadPointer(pawnClassPtr);
+
+            var relativeOffset = (long)pawnClass - (long)gameBase;
+
+            // Debug in case this ever breaks
+            // print("Relative Offset: " + relativeOffset.ToString("X"));
+
+            // Check that the relative offset ends with 8550
+            if ((relativeOffset & 0xFFFF) == expectedOffset)
+            {
+                vars.beatFaust = true;
+                return true;
+            };
+            return false;
+        }
+    );
+
+    vars.GetLevelID = (Func<string>)(() =>
+        {
+        var levelPtr = new DeepPointer("ProjectWingman-Win64-Shipping.exe", 0x9150ED0, 0x0, 0x180, 0x490);
+        var fText = levelPtr.Deref<IntPtr>(game);
+
+        var data = game.ReadPointer(fText);
+        var length = game.ReadValue<short>(fText + 0x8);
+
+        return game.ReadString(fText, ReadStringType.UTF16, length);
+        });
+
+}
+
 split
 {
-    // Trigger a split when missionComplete transitions from 2 (not complete) to 3 (mission complete)
-    return current.missionComplete == 3 && old.missionComplete == 2;
+    // Trigger a split when missionComplete transitions from 2 to 3 (for most missions) or at the end of Kings or Faust.
+    if (vars.GetLevelID() == "mf_06" && !vars.beatFaust){
+         return vars.FaustSplit();
+        }
+    else if (vars.GetLevelID() == "campaign_22" && !vars.beatKings){
+        return vars.KingsSplit(current.levelSequencePhase, old.levelSequencePhase, current.missionComplete);
+    }
+    else{
+        return (current.missionComplete == 3 && old.missionComplete == 2);
+    }
 }
 
 isLoading
