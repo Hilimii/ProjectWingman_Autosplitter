@@ -30,6 +30,8 @@ state("ProjectWingman-Win64-Shipping")
     byte onMissionSequence: "ProjectWingman-Win64-Shipping.exe", 0x9150ED0, 0x0, 0x180, 0x99B; // On Mission Sequence - True while in a 'Mission Sequence'
     // Triggers after a difficulty has been selected, once the player transitions from LevelSequencePhase 0 to 1 (Briefing)
     byte onFreeMission: "ProjectWingman-Win64-Shipping.exe", 0x9150ED0, 0x0, 0x180, 0x99A; // On Free Mission - True when in a free mission - Applicable to ILs
+
+    int playerPawnTargetList: "ProjectWingman-Win64-Shipping.exe", 0x095AC140, 0x30, 0x250, 0x758; // Length of the currently available target list for the player.
 }
 
 startup
@@ -47,6 +49,9 @@ startup
         settings.Add("IgnoreTakeoff", true, "Autostart Ignores Takeoff Sequence", "Mission");
             // When true, tells the Start function to ignore takeoff sequences whilst in Mission Mode
             settings.SetToolTip("IgnoreTakeoff", "Your timer will no longer auto-start in takeoff sequences before missions");
+        settings.Add("TunnelRun", false, "Autosplit Tunnel Run", "Mission");
+            // When true, tells the Split function to split when the player completes the tunnel run in MF04
+            settings.SetToolTip("TunnelRun", "Splits when the player completes the tunnel run in F59 Mission 4");
     settings.Add("Campaign", false, "Campaign Mode", "ModeWrapper");
     // Campaign mode has the following properties:
         // Automatically starts timer on difficulty select.
@@ -166,9 +171,15 @@ init
 split
 {
     // Trigger a split when missionComplete transitions from 2 to 3 (for most missions) or at the end of Kings or Faust.
+    print("Level" + vars.GetLevelID());
+    print("Tunnel Run Split" + settings["TunnelRun"]);
     if (vars.GetLevelID() == "mf_06" && !vars.beatFaust){
          return vars.FaustSplit();
         }
+    else if (vars.GetLevelID() == "mf_04" && settings["TunnelRun"] == true){
+
+        return (old.playerPawnTargetList < 20 && current.playerPawnTargetList > 30); // 50 units spawn at the end of the tunnel run
+    }
     else if (vars.GetLevelID() == "campaign_22" && !vars.beatKings){
         return vars.KingsSplit(current.levelSequencePhase, old.levelSequencePhase, current.missionComplete);
     }
