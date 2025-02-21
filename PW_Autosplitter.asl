@@ -78,7 +78,10 @@ reset
     )
     ||
     // Campaign mode only
-    // Watches 
+    // Watches onMissionSequence and levelSequencePhase. When the player has progressed beyond difficulty selection (onMissionSequence), test to see if levelSequencePhase has changed as well.
+    // When starting a new campaign, behaviour is as follows: onMissionSequence changes from 0 --> 1. levelSequencePhase stays put at 0, this is because the campaign starting cutscene is not counted as a briefing.
+    // When resuming a campaign, behaviour is as follows: onMissionSequence changes from 0 --> 1. levelSequencePhase changes from 0 --> 1, this is because it transitions to a briefing for the relevent resumed mission.
+    // Reset only occurs when we satisfy the conditions for starting a new campaign.
     (
         current.onMissionSequence == 1 && old.onMissionSequence == 0
         &&
