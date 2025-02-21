@@ -76,6 +76,16 @@ reset
         &&
         settings["Mission"] == true
     )
+    ||
+    // Campaign mode only
+    // Watches 
+    (
+        current.onMissionSequence == 1 && old.onMissionSequence == 0
+        &&
+        current.levelSequencePhase == old.levelSequencePhase
+        &&
+        settings["Campaign"] == true
+    )
     ;
 }
 
