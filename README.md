@@ -26,7 +26,7 @@ In Livesplit you can choose from the following options in the autosplitter:
 ## Campaign Mode
 * Autosplits once at the end of each mission.
 * Autostarts when you select your difficulty to begin the campaign.
-* Autoreset whenever you start a new campaign, useful if you reset on mission 1 often. Does not work if you have completed a run and you haven't saved your splits.
+* Autoresets whenever you start a new campaign, useful if you reset on mission 1 often. Does not work if you have completed a run and you haven't saved your splits.
 ### Campaign Mode - Crash Protection
 * Pauses your timer if you have not progressed beyond difficulty selection.
 * If your game crashes, your timer will be paused until you select 'Resume' to continue your campaign run.
