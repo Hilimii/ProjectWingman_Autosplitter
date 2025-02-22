@@ -1,8 +1,8 @@
-// Version: 1.2.0
+// Version: 1.3.0
 // By NitrogenCynic (https://www.speedrun.com/users/NitrogenCynic) and Hilimii (https://www.speedrun.com/users/Hilimii)
 
 // Added in this version:
-    // Split detection for Express Lane: Tunnel Run
+    // Auto reset functionality for Campaign mode
 
 state("ProjectWingman-Win64-Shipping")
 {
