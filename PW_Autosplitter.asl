@@ -1,8 +1,8 @@
-// Version: 1.1.1
+// Version: 1.2.0
 // By NitrogenCynic (https://www.speedrun.com/users/NitrogenCynic) and Hilimii (https://www.speedrun.com/users/Hilimii)
 
 // Added in this version:
-    // Split detection for Faust and Kings
+    // Split detection for Express Lane: Tunnel Run
 
 state("ProjectWingman-Win64-Shipping")
 {
@@ -30,6 +30,8 @@ state("ProjectWingman-Win64-Shipping")
     byte onMissionSequence: "ProjectWingman-Win64-Shipping.exe", 0x9150ED0, 0x0, 0x180, 0x99B; // On Mission Sequence - True while in a 'Mission Sequence'
     // Triggers after a difficulty has been selected, once the player transitions from LevelSequencePhase 0 to 1 (Briefing)
     byte onFreeMission: "ProjectWingman-Win64-Shipping.exe", 0x9150ED0, 0x0, 0x180, 0x99A; // On Free Mission - True when in a free mission - Applicable to ILs
+
+    int airUnitArrayLength: "ProjectWingman-Win64-Shipping.exe", 0x09150ED0, 0x0, 0x118, 0x388; // Length of the currently available air units in the mission
 }
 
 startup
@@ -47,6 +49,9 @@ startup
         settings.Add("IgnoreTakeoff", true, "Autostart Ignores Takeoff Sequence", "Mission");
             // When true, tells the Start function to ignore takeoff sequences whilst in Mission Mode
             settings.SetToolTip("IgnoreTakeoff", "Your timer will no longer auto-start in takeoff sequences before missions");
+        settings.Add("TunnelRun", false, "Autosplit Tunnel Run", "Mission");
+            // When true, tells the Split function to split when the player completes the tunnel run in MF04
+            settings.SetToolTip("TunnelRun", "Splits when the player completes the tunnel run in F59 Mission 4");
     settings.Add("Campaign", false, "Campaign Mode", "ModeWrapper");
     // Campaign mode has the following properties:
         // Automatically starts timer on difficulty select.
@@ -169,6 +174,9 @@ split
     if (vars.GetLevelID() == "mf_06" && !vars.beatFaust){
          return vars.FaustSplit();
         }
+    else if (vars.GetLevelID() == "mf_04" && settings["TunnelRun"] == true){
+        return (current.airUnitArrayLength == old.airUnitArrayLength + 4); // 4 helicopters spawn at the end of the tunnel run, before any other air units
+    }
     else if (vars.GetLevelID() == "campaign_22" && !vars.beatKings){
         return vars.KingsSplit(current.levelSequencePhase, old.levelSequencePhase, current.missionComplete);
     }
