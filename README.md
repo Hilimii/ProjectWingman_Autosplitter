@@ -18,7 +18,7 @@ In Livesplit you can choose from the following options in the autosplitter:
 ## Mission Mode
 * Autostarts the timer when gameplay begins, this is approximately 1.00s after pressing start to begin the mission.
 * Autosplits once at the end of the mission when 'Mission Complete' appears on the screen.
-* Autoresets every time you reset the mission. This will not work if you have completed a run and you haven't saved/cleared your splits.
+* Autoresets every time you reset the mission. This will not work if you have completed a run or you have gold splits.
 ### Autostart Ignores Takeoff Sequence
 * Prevents the timer from automatically starting when beginning a takeoff sequence on any mission.
 ### Tunnel Run
@@ -26,7 +26,7 @@ In Livesplit you can choose from the following options in the autosplitter:
 ## Campaign Mode
 * Autosplits once at the end of each mission.
 * Autostarts when you select your difficulty to begin the campaign.
-* Autoresets whenever you start a new campaign, useful if you reset on mission 1 often. Does not work if you have completed a run and you haven't saved your splits.
+* Autoresets whenever you start a new campaign, useful if you reset on mission 1 often. This will not work if you have completed a run or you have gold splits.
 ### Campaign Mode - Crash Protection
 * Pauses your timer if you have not progressed beyond difficulty selection.
 * If your game crashes, your timer will be paused until you select 'Resume' to continue your campaign run.
