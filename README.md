@@ -21,10 +21,12 @@ In Livesplit you can choose from the following options in the autosplitter:
 * Autoresets every time you reset the mission. This will not work if you have completed a run and you haven't saved/cleared your splits.
 ### Autostart Ignores Takeoff Sequence
 * Prevents the timer from automatically starting when beginning a takeoff sequence on any mission.
+### Tunnel Run
+* For running the F59 Mission 4: Express Lane tunnel run category. Triggers a split when you exit the tunnel.
 ## Campaign Mode
 * Autosplits once at the end of each mission.
 * Autostarts when you select your difficulty to begin the campaign.
-* No autoreset functionality.
+* Autoreset whenever you start a new campaign, useful if you reset on mission 1 often. Does not work if you have completed a run and you haven't saved your splits.
 ### Campaign Mode - Crash Protection
 * Pauses your timer if you have not progressed beyond difficulty selection.
 * If your game crashes, your timer will be paused until you select 'Resume' to continue your campaign run.
