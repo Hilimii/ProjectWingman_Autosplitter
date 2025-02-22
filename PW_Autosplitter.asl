@@ -1,8 +1,8 @@
-// Version: 1.2.0
+// Version: 1.3.0
 // By NitrogenCynic (https://www.speedrun.com/users/NitrogenCynic) and Hilimii (https://www.speedrun.com/users/Hilimii)
 
 // Added in this version:
-    // Split detection for Express Lane: Tunnel Run
+    // Auto reset functionality for Campaign mode
 
 state("ProjectWingman-Win64-Shipping")
 {
@@ -57,7 +57,7 @@ startup
         // Automatically starts timer on difficulty select.
         // Does not reset automatically
         // Automatically splits once at the end of each mission (only if you complete it)
-        settings.SetToolTip("Campaign", "For running full playthrough categories using campaign mode. Autostarts upon difficulty selection, and splits once at the end of each mission");
+        settings.SetToolTip("Campaign", "For running full playthrough categories using campaign mode. Autostarts upon difficulty selection, splits once at the end of each mission, and resets when starting a new campaign");
         settings.Add("CrashProtection", false, "Crash Protection", "Campaign");
             // Basic crash option. Stops the timer if the game is closed.
                 settings.SetToolTip("CrashProtection", "Pauses the timer if you have not progressed beyond difficulty selection. If your game crashes, your timer will be paused until you select 'Resume' to continue a campaign run.");
@@ -71,15 +71,34 @@ startup
 
 reset
 {
-    // Reset timer when playerRef is dereferenced (goes from defined to undefined).
-    // Mission mode only.
     return
+    // Mission mode only.
+        // Reset timer when playerRef is dereferenced (goes from defined to undefined).
     (
         current.playerRef == 0
         &&
         old.playerRef != 0
         &&
         settings["Mission"] == true
+    )
+    ||
+    // Campaign mode only
+        // Watches onMissionSequence and levelSequencePhase. When the player has progressed beyond difficulty selection (onMissionSequence), test to see if levelSequencePhase has changed as well.
+        // When starting a new campaign, behaviour is as follows: onMissionSequence changes from 0 --> 1. levelSequencePhase stays put at 0, this is because the campaign starting cutscene is not counted as a briefing.
+        // When resuming a campaign, behaviour is as follows: onMissionSequence changes from 0 --> 1. levelSequencePhase changes from 0 --> 1, this is because it transitions to a briefing for the relevent resumed mission.
+        // Reset only occurs when we satisfy the conditions for starting a new campaign.
+    (
+        current.onMissionSequence == 1 && old.onMissionSequence == 0
+        &&
+        current.levelSequencePhase == old.levelSequencePhase
+        &&
+        ( // Checks if the level we're transitioning to is the first mission of either campaign. This stops levels like campaign_17 'No Respite' triggering a reset with a cutscene.
+            vars.GetLevelID() == "campaign_01"
+            ||
+            vars.GetLevelID() == "mf_01"
+        )
+        &&
+        settings["Campaign"] == true
     )
     ;
 }
@@ -210,4 +229,12 @@ isLoading
     {
         return false;
     }
+}
+
+update
+{
+    // for bug testing
+    //print("levelSequencePhase: " + current.levelSequencePhase.ToString());
+    //print("onMissionSequence: " + current.onMissionSequence.ToString());
+    //print("level: " + vars.GetLevelID().ToString());
 }
