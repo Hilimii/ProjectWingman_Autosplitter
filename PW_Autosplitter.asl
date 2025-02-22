@@ -31,7 +31,7 @@ state("ProjectWingman-Win64-Shipping")
     // Triggers after a difficulty has been selected, once the player transitions from LevelSequencePhase 0 to 1 (Briefing)
     byte onFreeMission: "ProjectWingman-Win64-Shipping.exe", 0x9150ED0, 0x0, 0x180, 0x99A; // On Free Mission - True when in a free mission - Applicable to ILs
 
-    int playerPawnTargetList: "ProjectWingman-Win64-Shipping.exe", 0x095AC140, 0x30, 0x250, 0x758; // Length of the currently available target list for the player.
+    int airUnitArrayLength: "ProjectWingman-Win64-Shipping.exe", 0x09150ED0, 0x0, 0x118, 0x388; // Length of the currently available air units in the mission
 }
 
 startup
@@ -175,7 +175,7 @@ split
          return vars.FaustSplit();
         }
     else if (vars.GetLevelID() == "mf_04" && settings["TunnelRun"] == true){
-        return (current.playerPawnTargetList > 30); // 50 units spawn at the end of the tunnel run
+        return (current.airUnitArrayLength == old.airUnitArrayLength + 4); // 4 helicopters spawn at the end of the tunnel run, before any other air units
     }
     else if (vars.GetLevelID() == "campaign_22" && !vars.beatKings){
         return vars.KingsSplit(current.levelSequencePhase, old.levelSequencePhase, current.missionComplete);
