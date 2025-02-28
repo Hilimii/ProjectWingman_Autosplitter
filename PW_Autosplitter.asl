@@ -192,14 +192,28 @@ init
 
 split
 {
-    // Trigger a split when missionComplete transitions from 2 to 3 (for most missions) or at the end of Kings or Faust. Redirects to functions in init.
+    // Trigger a split when missionComplete transitions from 2 to 3 (for most missions) or at the end of Kings or Faust.
+    // Calls relevant functions in 'init' to trigger splits for Kings and Faust.
     //Faust
     if (vars.GetLevelID() == "mf_06" && !vars.beatFaust){
          return vars.FaustSplit();
         }
     // Tunnel Run
-    else if (vars.GetLevelID() == "mf_04" && settings["TunnelRun"] == true && vars.beatTunnel == false){
-        return (current.airUnitArrayLength == ( old.airUnitArrayLength + 4)); // 4 helicopters spawn at the end of the tunnel run, before any other air units
+    else if
+    (
+        vars.GetLevelID() == "mf_04" && vars.beatTunnel == false // Check we're on right mission and if the split has already triggered
+        &&
+        settings["TunnelRun"] == true // Check tunnel run setting is on
+    )
+    {
+        if
+        (
+            current.airUnitArrayLength == ( old.airUnitArrayLength + 4) // 4 helicopters spawn at the end of the tunnel run, before any other air units
+        )
+        {
+            vars.beatTunnel = true; // Stop repeats
+            return true;
+        }   
     }
     // Kings
     else if (vars.GetLevelID() == "campaign_22" && !vars.beatKings){
@@ -211,20 +225,7 @@ split
     }
 }
 
-onSplit
-{
-    // Tunnel run logic for culling multiple splits
-        // Sets beatTunnel to true when the exact criteria for a tunnel split are met
-    if
-    (
-        current.airUnitArrayLength == ( old.airUnitArrayLength + 4)
-        &&
-        vars.GetLevelID() == "mf_04" && settings["TunnelRun"] == true && vars.beatTunnel == false
-    )
-    {
-        vars.beatTunnel = true;
-    }
-}
+
 
 isLoading
 {
