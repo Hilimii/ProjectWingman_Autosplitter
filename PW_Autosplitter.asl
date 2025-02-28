@@ -1,8 +1,8 @@
-// Version: 1.3.0
+// Version: 1.3.1
 // By NitrogenCynic (https://www.speedrun.com/users/NitrogenCynic) and Hilimii (https://www.speedrun.com/users/Hilimii)
 
 // Added in this version:
-    // Auto reset functionality for Campaign mode
+    // Fix for Tunnel run split to stop it triggering twice.
 
 state("ProjectWingman-Win64-Shipping")
 {
@@ -67,6 +67,8 @@ startup
 
     // AutoSplitter settings
     refreshRate = 30; // Lowers autosplitter refresh rate. At 60Hz, at least on my end (Hilimii), some ticks give repeated values in debug, thereby tricking logic into believing nothing has changed, when it should have.
+    // Variables
+    vars.beatTunnel = false; // Variable for checking if tunnel split has triggered. Not really needed here, but this helps to cause less errors during testing.
 }
 
 reset
@@ -105,8 +107,9 @@ reset
 
 start
 {
-    vars.beatKings = false;
-    vars.beatFaust = false;
+    vars.beatKings = false; // Var for checking if kings split has fired
+    vars.beatFaust = false; // Var for checking if faust split has fired
+    vars.beatTunnel = false; // Var for checking if Tunnel run split has fired
 
     // Mission mode only
     // Start the timer when playerRef transitions from undefined (menu) to defined (in mission)
@@ -174,6 +177,7 @@ init
         }
     );
 
+    // Get level ID
     vars.GetLevelID = (Func<string>)(() =>
         {
         var levelPtr = new DeepPointer("ProjectWingman-Win64-Shipping.exe", 0x9150ED0, 0x0, 0x180, 0x490);
@@ -184,23 +188,41 @@ init
 
         return game.ReadString(fText, ReadStringType.UTF16, length);
         });
-
 }
 
 split
 {
-    // Trigger a split when missionComplete transitions from 2 to 3 (for most missions) or at the end of Kings or Faust.
+    // Trigger a split when missionComplete transitions from 2 to 3 (for most missions) or at the end of Kings or Faust. Redirects to functions in init.
+    //Faust
     if (vars.GetLevelID() == "mf_06" && !vars.beatFaust){
          return vars.FaustSplit();
         }
-    else if (vars.GetLevelID() == "mf_04" && settings["TunnelRun"] == true){
-        return (current.airUnitArrayLength == old.airUnitArrayLength + 4); // 4 helicopters spawn at the end of the tunnel run, before any other air units
+    // Tunnel Run
+    else if (vars.GetLevelID() == "mf_04" && settings["TunnelRun"] == true && vars.beatTunnel == false){
+        return (current.airUnitArrayLength == ( old.airUnitArrayLength + 4)); // 4 helicopters spawn at the end of the tunnel run, before any other air units
     }
+    // Kings
     else if (vars.GetLevelID() == "campaign_22" && !vars.beatKings){
         return vars.KingsSplit(current.levelSequencePhase, old.levelSequencePhase, current.missionComplete);
     }
+    // Default logic for missions.
     else{
         return (current.missionComplete == 3 && old.missionComplete == 2);
+    }
+}
+
+onSplit
+{
+    // Tunnel run logic for culling multiple splits
+        // Sets beatTunnel to true when the exact criteria for a tunnel split are met
+    if
+    (
+        current.airUnitArrayLength == ( old.airUnitArrayLength + 4)
+        &&
+        vars.GetLevelID() == "mf_04" && settings["TunnelRun"] == true && vars.beatTunnel == false
+    )
+    {
+        vars.beatTunnel = true;
     }
 }
 
@@ -237,4 +259,7 @@ update
     //print("levelSequencePhase: " + current.levelSequencePhase.ToString());
     //print("onMissionSequence: " + current.onMissionSequence.ToString());
     //print("level: " + vars.GetLevelID().ToString());
+    //print(current.airUnitArrayLength.ToString());
+    //print(vars.beatTunnel.ToString());
+
 }
