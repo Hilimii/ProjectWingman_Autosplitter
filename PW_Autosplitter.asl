@@ -164,6 +164,55 @@ start
     vars.started_mf_05          = false;
     vars.started_mf_06          = false;
 
+    // Dictionary of Mission Start functions
+    // Key : ID - Tuple of (GetLevelID result, MSS - Mission Start Split Function, MSSR - Mission Start Split Repeat Function)
+    vars.StartSplitTable = new Dictionary<string, Tuple< string, Func<bool>, Func<bool>>>
+    {
+        { "campaign_01",    Tuple.Create(   "campaign_01"  ,      new Func<bool>(() => vars.campaign_01_MSS()     ), new Func<bool>(() => vars.campaign_01_MSSR()   ))},
+        { "campaign_02",    Tuple.Create(   "campaign_02"  ,      new Func<bool>(() => vars.campaign_02_MSS()     ), new Func<bool>(() => vars.campaign_02_MSSR()   ))},
+        { "campaign_03",    Tuple.Create(   "campaign_03"  ,      new Func<bool>(() => vars.campaign_03_MSS()     ), new Func<bool>(() => vars.campaign_03_MSSR()   ))},
+        { "campaign_04",    Tuple.Create(   "campaign_04"  ,      new Func<bool>(() => vars.campaign_04_MSS()     ), new Func<bool>(() => vars.campaign_04_MSSR()   ))},
+        { "campaign_05",    Tuple.Create(   "campaign_05"  ,      new Func<bool>(() => vars.campaign_05_MSS()     ), new Func<bool>(() => vars.campaign_05_MSSR()   ))},
+        { "campaign_06",    Tuple.Create(   "campaign_06"  ,      new Func<bool>(() => vars.campaign_06_MSS()     ), new Func<bool>(() => vars.campaign_06_MSSR()   ))},
+        { "campaign_07",    Tuple.Create(   "campaign_07"  ,      new Func<bool>(() => vars.campaign_07_MSS()     ), new Func<bool>(() => vars.campaign_07_MSSR()   ))},
+        { "campaign_08",    Tuple.Create(   "campaign_08"  ,      new Func<bool>(() => vars.campaign_08_MSS()     ), new Func<bool>(() => vars.campaign_08_MSSR()   ))},
+        { "campaign_09",    Tuple.Create(   "campaign_09"  ,      new Func<bool>(() => vars.campaign_09_MSS()     ), new Func<bool>(() => vars.campaign_09_MSSR()   ))},
+        { "campaign_10",    Tuple.Create(   "campaign_10"  ,      new Func<bool>(() => vars.campaign_10_MSS()     ), new Func<bool>(() => vars.campaign_10_MSSR()   ))},
+        { "campaign_11",    Tuple.Create(   "campaign_11"  ,      new Func<bool>(() => vars.campaign_11_MSS()     ), new Func<bool>(() => vars.campaign_11_MSSR()   ))},
+        { "campaign_12",    Tuple.Create(   "campaign_12"  ,      new Func<bool>(() => vars.campaign_12_MSS()     ), new Func<bool>(() => vars.campaign_12_MSSR()   ))},
+        { "campaign_13",    Tuple.Create(   "campaign_13"  ,      new Func<bool>(() => vars.campaign_13_MSS()     ), new Func<bool>(() => vars.campaign_13_MSSR()   ))},
+        { "campaign_14",    Tuple.Create(   "campaign_14"  ,      new Func<bool>(() => vars.campaign_14_MSS()     ), new Func<bool>(() => vars.campaign_14_MSSR()   ))},
+        { "campaign_15",    Tuple.Create(   "campaign_16"  ,      new Func<bool>(() => vars.campaign_15_MSS()     ), new Func<bool>(() => vars.campaign_15_MSSR()   ))},
+        { "campaign_16",    Tuple.Create(   "campaign_16.2",      new Func<bool>(() => vars.campaign_16_MSS()     ), new Func<bool>(() => vars.campaign_16_MSSR()   ))},
+        { "campaign_17",    Tuple.Create(   "campaign_17"  ,      new Func<bool>(() => vars.campaign_17_MSS()     ), new Func<bool>(() => vars.campaign_17_MSSR()   ))},
+        { "campaign_18",    Tuple.Create(   "campaign_18"  ,      new Func<bool>(() => vars.campaign_18_MSS()     ), new Func<bool>(() => vars.campaign_18_MSSR()   ))},
+        { "campaign_19",    Tuple.Create(   "campaign_19"  ,      new Func<bool>(() => vars.campaign_19_MSS()     ), new Func<bool>(() => vars.campaign_19_MSSR()   ))},
+        { "campaign_20",    Tuple.Create(   "campaign_20"  ,      new Func<bool>(() => vars.campaign_20_MSS()     ), new Func<bool>(() => vars.campaign_20_MSSR()   ))},
+        { "campaign_21",    Tuple.Create(   "campaign_22"  ,      new Func<bool>(() => vars.campaign_21_MSS()     ), new Func<bool>(() => vars.campaign_21_MSSR()   ))},
+        { "mf_01"      ,    Tuple.Create(   "mf_01"        ,      new Func<bool>(() => vars.mf_01_MSS      ()     ), new Func<bool>(() => vars.mf_01_MSSR      ()   ))},
+        { "mf_02"      ,    Tuple.Create(   "mf_02"        ,      new Func<bool>(() => vars.mf_02_MSS      ()     ), new Func<bool>(() => vars.mf_02_MSSR      ()   ))},
+        { "mf_03"      ,    Tuple.Create(   "mf_03"        ,      new Func<bool>(() => vars.mf_03_MSS      ()     ), new Func<bool>(() => vars.mf_03_MSSR      ()   ))},
+        { "mf_04"      ,    Tuple.Create(   "mf_04"        ,      new Func<bool>(() => vars.mf_04_MSS      ()     ), new Func<bool>(() => vars.mf_04_MSSR      ()   ))},
+        { "mf_05"      ,    Tuple.Create(   "mf_05"        ,      new Func<bool>(() => vars.mf_05_MSS      ()     ), new Func<bool>(() => vars.mf_05_MSSR      ()   ))},
+        { "mf_06"      ,    Tuple.Create(   "mf_06"        ,      new Func<bool>(() => vars.mf_06_MSS      ()     ), new Func<bool>(() => vars.mf_06_MSSR      ()   ))},
+    };
+
+
+    // Remove campaign entries if starting a F59 run. Helps split logic to be more efficient.
+    if
+    (
+        vars.GetLevelID() == "mf*"
+    )
+    {
+        foreach (var data in vars.StartSplitTable)
+        if
+        (
+            data.Value.Item1 == "campaign*"
+        )
+        {
+            vars.StartSplitTable.Remove(data);
+        }
+    }
     // Mission mode only
     // Start the timer when playerRef transitions from undefined (menu) to defined (in mission)
     return
@@ -282,6 +331,38 @@ init
                 return false;
         }
     );
+
+    // Start Split Functions
+        // Left function: MSS. Sets relevant start split var to true so repeats can't happen, returns true.
+        // Right function: MSSR - Checks if relevant start split var has been changed.
+
+    vars.campaign_01_MSS    = (Func<bool>)(() => {vars.started_campaign_01      = true; return true;});     vars.campaign_01_MSSR    = (Func<bool>)(() => {if(vars.started_campaign_01      == false){return true;}return false;});
+    vars.campaign_02_MSS    = (Func<bool>)(() => {vars.started_campaign_02      = true; return true;});     vars.campaign_02_MSSR    = (Func<bool>)(() => {if(vars.started_campaign_02      == false){return true;}return false;});
+    vars.campaign_03_MSS    = (Func<bool>)(() => {vars.started_campaign_03      = true; return true;});     vars.campaign_03_MSSR    = (Func<bool>)(() => {if(vars.started_campaign_03      == false){return true;}return false;});
+    vars.campaign_04_MSS    = (Func<bool>)(() => {vars.started_campaign_04      = true; return true;});     vars.campaign_04_MSSR    = (Func<bool>)(() => {if(vars.started_campaign_04      == false){return true;}return false;});
+    vars.campaign_05_MSS    = (Func<bool>)(() => {vars.started_campaign_05      = true; return true;});     vars.campaign_05_MSSR    = (Func<bool>)(() => {if(vars.started_campaign_05      == false){return true;}return false;});
+    vars.campaign_06_MSS    = (Func<bool>)(() => {vars.started_campaign_06      = true; return true;});     vars.campaign_06_MSSR    = (Func<bool>)(() => {if(vars.started_campaign_06      == false){return true;}return false;});
+    vars.campaign_07_MSS    = (Func<bool>)(() => {vars.started_campaign_07      = true; return true;});     vars.campaign_07_MSSR    = (Func<bool>)(() => {if(vars.started_campaign_07      == false){return true;}return false;});
+    vars.campaign_08_MSS    = (Func<bool>)(() => {vars.started_campaign_08      = true; return true;});     vars.campaign_08_MSSR    = (Func<bool>)(() => {if(vars.started_campaign_08      == false){return true;}return false;});
+    vars.campaign_09_MSS    = (Func<bool>)(() => {vars.started_campaign_09      = true; return true;});     vars.campaign_09_MSSR    = (Func<bool>)(() => {if(vars.started_campaign_09      == false){return true;}return false;});
+    vars.campaign_10_MSS    = (Func<bool>)(() => {vars.started_campaign_10      = true; return true;});     vars.campaign_10_MSSR    = (Func<bool>)(() => {if(vars.started_campaign_10      == false){return true;}return false;});
+    vars.campaign_11_MSS    = (Func<bool>)(() => {vars.started_campaign_11      = true; return true;});     vars.campaign_11_MSSR    = (Func<bool>)(() => {if(vars.started_campaign_11      == false){return true;}return false;});
+    vars.campaign_12_MSS    = (Func<bool>)(() => {vars.started_campaign_12      = true; return true;});     vars.campaign_12_MSSR    = (Func<bool>)(() => {if(vars.started_campaign_12      == false){return true;}return false;});
+    vars.campaign_13_MSS    = (Func<bool>)(() => {vars.started_campaign_13      = true; return true;});     vars.campaign_13_MSSR    = (Func<bool>)(() => {if(vars.started_campaign_13      == false){return true;}return false;});
+    vars.campaign_14_MSS    = (Func<bool>)(() => {vars.started_campaign_14      = true; return true;});     vars.campaign_14_MSSR    = (Func<bool>)(() => {if(vars.started_campaign_14      == false){return true;}return false;});
+    vars.campaign_15_MSS    = (Func<bool>)(() => {vars.started_campaign_15      = true; return true;});     vars.campaign_15_MSSR    = (Func<bool>)(() => {if(vars.started_campaign_15      == false){return true;}return false;});
+    vars.campaign_16_MSS    = (Func<bool>)(() => {vars.started_campaign_16      = true; return true;});     vars.campaign_16_MSSR    = (Func<bool>)(() => {if(vars.started_campaign_16      == false){return true;}return false;});
+    vars.campaign_17_MSS    = (Func<bool>)(() => {vars.started_campaign_17      = true; return true;});     vars.campaign_17_MSSR    = (Func<bool>)(() => {if(vars.started_campaign_17      == false){return true;}return false;});
+    vars.campaign_18_MSS    = (Func<bool>)(() => {vars.started_campaign_18      = true; return true;});     vars.campaign_18_MSSR    = (Func<bool>)(() => {if(vars.started_campaign_18      == false){return true;}return false;});
+    vars.campaign_19_MSS    = (Func<bool>)(() => {vars.started_campaign_19      = true; return true;});     vars.campaign_19_MSSR    = (Func<bool>)(() => {if(vars.started_campaign_19      == false){return true;}return false;});
+    vars.campaign_20_MSS    = (Func<bool>)(() => {vars.started_campaign_20      = true; return true;});     vars.campaign_20_MSSR    = (Func<bool>)(() => {if(vars.started_campaign_20      == false){return true;}return false;});
+    vars.campaign_21_MSS    = (Func<bool>)(() => {vars.started_campaign_21      = true; return true;});     vars.campaign_21_MSSR    = (Func<bool>)(() => {if(vars.started_campaign_21      == false){return true;}return false;});
+    vars.mf_01_MSS          = (Func<bool>)(() => {vars.started_mf_01            = true; return true;});     vars.mf_01_MSSR          = (Func<bool>)(() => {if(vars.started_mf_02            == false){return true;}return false;});
+    vars.mf_02_MSS          = (Func<bool>)(() => {vars.started_mf_02            = true; return true;});     vars.mf_02_MSSR          = (Func<bool>)(() => {if(vars.started_mf_02            == false){return true;}return false;});
+    vars.mf_03_MSS          = (Func<bool>)(() => {vars.started_mf_03            = true; return true;});     vars.mf_03_MSSR          = (Func<bool>)(() => {if(vars.started_mf_03            == false){return true;}return false;});   
+    vars.mf_04_MSS          = (Func<bool>)(() => {vars.started_mf_04            = true; return true;});     vars.mf_04_MSSR          = (Func<bool>)(() => {if(vars.started_mf_04            == false){return true;}return false;});
+    vars.mf_05_MSS          = (Func<bool>)(() => {vars.started_mf_05            = true; return true;});     vars.mf_05_MSSR          = (Func<bool>)(() => {if(vars.started_mf_05            == false){return true;}return false;});
+    vars.mf_06_MSS          = (Func<bool>)(() => {vars.started_mf_06            = true; return true;});     vars.mf_06_MSSR          = (Func<bool>)(() => {if(vars.started_mf_06            == false){return true;}return false;});
 }
 //-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 split
@@ -342,44 +423,28 @@ split
     }
 
     // Mission Start Splits
-        // Checks firstly if the mission start setting is on, helps to provide an early escape
-        // Check if the mission has started using hasMissionStarted()
-        // Then checks through the critera for each mission: Has the split the already trigged? Are we on the right mission?
-        // On true, stops repeats and triggers a split. Otherwise, escape to run over other splits.
-    
+        // Checks firstly if the mission start setting is on and if a mission has started
+        // Runs through the list of start splits and checks if any criteria is met, i.e. if the ID of the level matches the given value in the table = true.
+        // Also check if this split has already triggered
+        // If all criteria is met, stop repeats, remove the split from the table, and break loop.
+
     else if
     (
         vars.hasMissionStarted(current.playerRef,old.playerRef,current.levelSequencePhase) == true && settings["StartSplits"] == true
     )
     {
-        if      (vars.started_campaign_01     == false && vars.GetLevelID() == "campaign_01"    ){vars.started_campaign_01      = true; return true;    }
-        else if (vars.started_campaign_02     == false && vars.GetLevelID() == "campaign_02"    ){vars.started_campaign_02      = true; return true;    }
-        else if (vars.started_campaign_03     == false && vars.GetLevelID() == "campaign_03"    ){vars.started_campaign_03      = true; return true;    }
-        else if (vars.started_campaign_04     == false && vars.GetLevelID() == "campaign_04"    ){vars.started_campaign_04      = true; return true;    }
-        else if (vars.started_campaign_05     == false && vars.GetLevelID() == "campaign_05"    ){vars.started_campaign_05      = true; return true;    }
-        else if (vars.started_campaign_06     == false && vars.GetLevelID() == "campaign_06"    ){vars.started_campaign_06      = true; return true;    }
-        else if (vars.started_campaign_07     == false && vars.GetLevelID() == "campaign_07"    ){vars.started_campaign_07      = true; return true;    }
-        else if (vars.started_campaign_08     == false && vars.GetLevelID() == "campaign_08"    ){vars.started_campaign_08      = true; return true;    }
-        else if (vars.started_campaign_09     == false && vars.GetLevelID() == "campaign_09"    ){vars.started_campaign_09      = true; return true;    }
-        else if (vars.started_campaign_10     == false && vars.GetLevelID() == "campaign_10"    ){vars.started_campaign_10      = true; return true;    }
-        else if (vars.started_campaign_11     == false && vars.GetLevelID() == "campaign_11"    ){vars.started_campaign_11      = true; return true;    }
-        else if (vars.started_campaign_12     == false && vars.GetLevelID() == "campaign_12"    ){vars.started_campaign_12      = true; return true;    }
-        else if (vars.started_campaign_13     == false && vars.GetLevelID() == "campaign_13"    ){vars.started_campaign_13      = true; return true;    }
-        else if (vars.started_campaign_14     == false && vars.GetLevelID() == "campaign_14"    ){vars.started_campaign_14      = true; return true;    }
-        else if (vars.started_campaign_15     == false && vars.GetLevelID() == "campaign_16"    ){vars.started_campaign_15      = true; return true;    } // Mission 15  - GetLevelID() == campaign_16 during this mission
-        else if (vars.started_campaign_16     == false && vars.GetLevelID() == "campaign_16.2"  ){vars.started_campaign_16      = true; return true;    } // Mission 16  - GetLevelID() == campaign_16.2 during this mission
-        else if (vars.started_campaign_17     == false && vars.GetLevelID() == "campaign_17"    ){vars.started_campaign_17      = true; return true;    }
-        else if (vars.started_campaign_18     == false && vars.GetLevelID() == "campaign_18"    ){vars.started_campaign_18      = true; return true;    }
-        else if (vars.started_campaign_19     == false && vars.GetLevelID() == "campaign_19"    ){vars.started_campaign_19      = true; return true;    }
-        else if (vars.started_campaign_20     == false && vars.GetLevelID() == "campaign_20"    ){vars.started_campaign_20      = true; return true;    }
-        else if (vars.started_campaign_21     == false && vars.GetLevelID() == "campaign_22"    ){vars.started_campaign_21      = true; return true;    } // Kings flag is GetLevelID() == campaign_22
-        else if (vars.started_mf_01           == false && vars.GetLevelID() == "mf_01"          ){vars.started_mf_01            = true; return true;    }
-        else if (vars.started_mf_02           == false && vars.GetLevelID() == "mf_02"          ){vars.started_mf_02            = true; return true;    }
-        else if (vars.started_mf_03           == false && vars.GetLevelID() == "mf_03"          ){vars.started_mf_03            = true; return true;    }
-        else if (vars.started_mf_04           == false && vars.GetLevelID() == "mf_04"          ){vars.started_mf_04            = true; return true;    }
-        else if (vars.started_mf_05           == false && vars.GetLevelID() == "mf_05"          ){vars.started_mf_05            = true; return true;    }
-        else if (vars.started_mf_06           == false && vars.GetLevelID() == "mf_06"          ){vars.started_mf_06            = true; return true;    }
-        else                                                                                     {                                      return false;   }
+        foreach (var data in vars.StartSplitTable)
+        {
+            if
+            (
+                (data.Value.Item1 == vars.GetLevelID()) && data.Value.Item3() == true
+            )
+            {
+            return data.Value.Item2();
+            vars.StartSplitTable.Remove(data);
+            break;
+            }
+        }
     }
 }
 //-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
