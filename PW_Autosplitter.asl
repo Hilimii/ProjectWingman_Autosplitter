@@ -287,53 +287,16 @@ init
 split
 // Establish criteria for a split
 {
-    
-    // Mission Start Splits
-        // Checks firstly if the mission start setting is on, helps to provide an early escape
-        // Check if the mission has started using hasMissionStarted()
-        // Then checks through the critera for each mission: Has the split the already trigged? Are we on the right mission?
-        // On true, stops repeats and triggers a split. Otherwise, escape to run over other splits.
-    
+
+    // Default logic for mission end splits.
+        // Check if missioncomplete has transitioned from 2 to 3
     if
     (
-        settings["StartSplits"] == true
+        current.missionComplete == 3 && old.missionComplete == 2
     )
-    {
-        if
-        (
-            vars.hasMissionStarted(current.playerRef,old.playerRef,current.levelSequencePhase) == true 
-        )
         {
-            if      (vars.started_campaign_01     == false && vars.GetLevelID() == "campaign_01"    ){vars.started_campaign_01      = true; return true;    }
-            else if (vars.started_campaign_02     == false && vars.GetLevelID() == "campaign_02"    ){vars.started_campaign_02      = true; return true;    }
-            else if (vars.started_campaign_03     == false && vars.GetLevelID() == "campaign_03"    ){vars.started_campaign_03      = true; return true;    }
-            else if (vars.started_campaign_04     == false && vars.GetLevelID() == "campaign_04"    ){vars.started_campaign_04      = true; return true;    }
-            else if (vars.started_campaign_05     == false && vars.GetLevelID() == "campaign_05"    ){vars.started_campaign_05      = true; return true;    }
-            else if (vars.started_campaign_06     == false && vars.GetLevelID() == "campaign_06"    ){vars.started_campaign_06      = true; return true;    }
-            else if (vars.started_campaign_07     == false && vars.GetLevelID() == "campaign_07"    ){vars.started_campaign_07      = true; return true;    }
-            else if (vars.started_campaign_08     == false && vars.GetLevelID() == "campaign_08"    ){vars.started_campaign_08      = true; return true;    }
-            else if (vars.started_campaign_09     == false && vars.GetLevelID() == "campaign_09"    ){vars.started_campaign_09      = true; return true;    }
-            else if (vars.started_campaign_10     == false && vars.GetLevelID() == "campaign_10"    ){vars.started_campaign_10      = true; return true;    }
-            else if (vars.started_campaign_11     == false && vars.GetLevelID() == "campaign_11"    ){vars.started_campaign_11      = true; return true;    }
-            else if (vars.started_campaign_12     == false && vars.GetLevelID() == "campaign_12"    ){vars.started_campaign_12      = true; return true;    }
-            else if (vars.started_campaign_13     == false && vars.GetLevelID() == "campaign_13"    ){vars.started_campaign_13      = true; return true;    }
-            else if (vars.started_campaign_14     == false && vars.GetLevelID() == "campaign_14"    ){vars.started_campaign_14      = true; return true;    }
-            else if (vars.started_campaign_15     == false && vars.GetLevelID() == "campaign_16"    ){vars.started_campaign_15      = true; return true;    } // Mission 15  - GetLevelID() == campaign_16 during this mission
-            else if (vars.started_campaign_16     == false && vars.GetLevelID() == "campaign_16.2"  ){vars.started_campaign_16      = true; return true;    } // Mission 16  - GetLevelID() == campaign_16.2 during this mission
-            else if (vars.started_campaign_17     == false && vars.GetLevelID() == "campaign_17"    ){vars.started_campaign_17      = true; return true;    }
-            else if (vars.started_campaign_18     == false && vars.GetLevelID() == "campaign_18"    ){vars.started_campaign_18      = true; return true;    }
-            else if (vars.started_campaign_19     == false && vars.GetLevelID() == "campaign_19"    ){vars.started_campaign_19      = true; return true;    }
-            else if (vars.started_campaign_20     == false && vars.GetLevelID() == "campaign_20"    ){vars.started_campaign_20      = true; return true;    }
-            else if (vars.started_campaign_21     == false && vars.GetLevelID() == "campaign_22"    ){vars.started_campaign_21      = true; return true;    } // Kings flag is GetLevelID() == campaign_22
-            else if (vars.started_mf_01           == false && vars.GetLevelID() == "mf_01"          ){vars.started_mf_01            = true; return true;    }
-            else if (vars.started_mf_02           == false && vars.GetLevelID() == "mf_02"          ){vars.started_mf_02            = true; return true;    }
-            else if (vars.started_mf_03           == false && vars.GetLevelID() == "mf_03"          ){vars.started_mf_03            = true; return true;    }
-            else if (vars.started_mf_04           == false && vars.GetLevelID() == "mf_04"          ){vars.started_mf_04            = true; return true;    }
-            else if (vars.started_mf_05           == false && vars.GetLevelID() == "mf_05"          ){vars.started_mf_05            = true; return true;    }
-            else if (vars.started_mf_06           == false && vars.GetLevelID() == "mf_06"          ){vars.started_mf_06            = true; return true;    }
-            else                                                                                     {                                      return false;   }
+            return true;
         }
-    }
 
     // Special Splits
         // These are splits that trigger at special times, not demarked by a mission ending or beginning
@@ -356,10 +319,11 @@ split
 
     //Faust
         // Check if we're on the right mission and if we've already triggered this split
+        // Compare StartSplits option with appropriate start split variable for this mission using XNOR. Allows this section to be bypassed before a start split activates in campaign mode.
         // If true, call FaustSplit function, which tests whether the player controller transitions to the credits controller.
     else if 
     (
-        vars.GetLevelID() == "mf_06" && !vars.beatFaust
+        vars.GetLevelID() == "mf_06" && !vars.beatFaust && ( vars.started_mf_06 == settings["StartSplits"] )
     )
     {
         return vars.FaustSplit();
@@ -367,24 +331,56 @@ split
 
     // Kings
         // Check if we're on the right mission, and if we've already triggered this split
+        // Compare StartSplits option with appropriate start split variable for this mission using XNOR. Allows this section to be bypassed before a start split activates in campaign mode.
         // If true, call KingsSplit function, which tests whether levelSequencePhase transitions from 6 (in mission) to 7 (in cutscene) and if we're NOT on M16 Wayback.
     else if
     (
-        vars.GetLevelID() == "campaign_22" && !vars.beatKings
+        vars.GetLevelID() == "campaign_22" && !vars.beatKings && ( vars.started_campaign_21 == settings["StartSplits"] )
     )
     {
         return vars.KingsSplit(current.levelSequencePhase, old.levelSequencePhase, current.missionComplete);
     }
 
-    // Default logic for mission end splits.
-        // Check if missioncomplete has transitioned from 2 to 3
+    // Mission Start Splits
+        // Checks firstly if the mission start setting is on, helps to provide an early escape
+        // Check if the mission has started using hasMissionStarted()
+        // Then checks through the critera for each mission: Has the split the already trigged? Are we on the right mission?
+        // On true, stops repeats and triggers a split. Otherwise, escape to run over other splits.
+    
     else if
     (
-        current.missionComplete == 3 && old.missionComplete == 2
+        vars.hasMissionStarted(current.playerRef,old.playerRef,current.levelSequencePhase) == true && settings["StartSplits"] == true
     )
-        {
-            return true;
-        }
+    {
+        if      (vars.started_campaign_01     == false && vars.GetLevelID() == "campaign_01"    ){vars.started_campaign_01      = true; return true;    }
+        else if (vars.started_campaign_02     == false && vars.GetLevelID() == "campaign_02"    ){vars.started_campaign_02      = true; return true;    }
+        else if (vars.started_campaign_03     == false && vars.GetLevelID() == "campaign_03"    ){vars.started_campaign_03      = true; return true;    }
+        else if (vars.started_campaign_04     == false && vars.GetLevelID() == "campaign_04"    ){vars.started_campaign_04      = true; return true;    }
+        else if (vars.started_campaign_05     == false && vars.GetLevelID() == "campaign_05"    ){vars.started_campaign_05      = true; return true;    }
+        else if (vars.started_campaign_06     == false && vars.GetLevelID() == "campaign_06"    ){vars.started_campaign_06      = true; return true;    }
+        else if (vars.started_campaign_07     == false && vars.GetLevelID() == "campaign_07"    ){vars.started_campaign_07      = true; return true;    }
+        else if (vars.started_campaign_08     == false && vars.GetLevelID() == "campaign_08"    ){vars.started_campaign_08      = true; return true;    }
+        else if (vars.started_campaign_09     == false && vars.GetLevelID() == "campaign_09"    ){vars.started_campaign_09      = true; return true;    }
+        else if (vars.started_campaign_10     == false && vars.GetLevelID() == "campaign_10"    ){vars.started_campaign_10      = true; return true;    }
+        else if (vars.started_campaign_11     == false && vars.GetLevelID() == "campaign_11"    ){vars.started_campaign_11      = true; return true;    }
+        else if (vars.started_campaign_12     == false && vars.GetLevelID() == "campaign_12"    ){vars.started_campaign_12      = true; return true;    }
+        else if (vars.started_campaign_13     == false && vars.GetLevelID() == "campaign_13"    ){vars.started_campaign_13      = true; return true;    }
+        else if (vars.started_campaign_14     == false && vars.GetLevelID() == "campaign_14"    ){vars.started_campaign_14      = true; return true;    }
+        else if (vars.started_campaign_15     == false && vars.GetLevelID() == "campaign_16"    ){vars.started_campaign_15      = true; return true;    } // Mission 15  - GetLevelID() == campaign_16 during this mission
+        else if (vars.started_campaign_16     == false && vars.GetLevelID() == "campaign_16.2"  ){vars.started_campaign_16      = true; return true;    } // Mission 16  - GetLevelID() == campaign_16.2 during this mission
+        else if (vars.started_campaign_17     == false && vars.GetLevelID() == "campaign_17"    ){vars.started_campaign_17      = true; return true;    }
+        else if (vars.started_campaign_18     == false && vars.GetLevelID() == "campaign_18"    ){vars.started_campaign_18      = true; return true;    }
+        else if (vars.started_campaign_19     == false && vars.GetLevelID() == "campaign_19"    ){vars.started_campaign_19      = true; return true;    }
+        else if (vars.started_campaign_20     == false && vars.GetLevelID() == "campaign_20"    ){vars.started_campaign_20      = true; return true;    }
+        else if (vars.started_campaign_21     == false && vars.GetLevelID() == "campaign_22"    ){vars.started_campaign_21      = true; return true;    } // Kings flag is GetLevelID() == campaign_22
+        else if (vars.started_mf_01           == false && vars.GetLevelID() == "mf_01"          ){vars.started_mf_01            = true; return true;    }
+        else if (vars.started_mf_02           == false && vars.GetLevelID() == "mf_02"          ){vars.started_mf_02            = true; return true;    }
+        else if (vars.started_mf_03           == false && vars.GetLevelID() == "mf_03"          ){vars.started_mf_03            = true; return true;    }
+        else if (vars.started_mf_04           == false && vars.GetLevelID() == "mf_04"          ){vars.started_mf_04            = true; return true;    }
+        else if (vars.started_mf_05           == false && vars.GetLevelID() == "mf_05"          ){vars.started_mf_05            = true; return true;    }
+        else if (vars.started_mf_06           == false && vars.GetLevelID() == "mf_06"          ){vars.started_mf_06            = true; return true;    }
+        else                                                                                     {                                      return false;   }
+    }
 }
 //-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 isLoading
