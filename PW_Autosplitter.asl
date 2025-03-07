@@ -1,9 +1,11 @@
 //=====================================================================================================================================================================================================
-// Version: 1.3.1
+// Version: 1.4.0
 // By NitrogenCynic (https://www.speedrun.com/users/NitrogenCynic) and Hilimii (https://www.speedrun.com/users/Hilimii)
 
 // Added in this version:
-    // Fix for Tunnel run split to stop it triggering twice.
+    // Tunnel run split function
+    // hasmissionstarted function
+    // Mission Start splits + accompanying functions and variables
 //=====================================================================================================================================================================================================
 state("ProjectWingman-Win64-Shipping")
 // Defines pointers which are being read from game memory
@@ -168,6 +170,12 @@ start
     // Key : ID - Tuple of (GetLevelID result, MSS - Mission Start Split Function, MSSR - Mission Start Split Repeat Function)
     vars.StartSplitTable = new Dictionary<string, Tuple< string, Func<bool>, Func<bool>>>
     {
+        { "mf_01"      ,    Tuple.Create(   "mf_01"        ,      new Func<bool>(() => vars.mf_01_MSS      ()     ), new Func<bool>(() => vars.mf_01_MSSR      ()   ))},
+        { "mf_02"      ,    Tuple.Create(   "mf_02"        ,      new Func<bool>(() => vars.mf_02_MSS      ()     ), new Func<bool>(() => vars.mf_02_MSSR      ()   ))},
+        { "mf_03"      ,    Tuple.Create(   "mf_03"        ,      new Func<bool>(() => vars.mf_03_MSS      ()     ), new Func<bool>(() => vars.mf_03_MSSR      ()   ))},
+        { "mf_04"      ,    Tuple.Create(   "mf_04"        ,      new Func<bool>(() => vars.mf_04_MSS      ()     ), new Func<bool>(() => vars.mf_04_MSSR      ()   ))},
+        { "mf_05"      ,    Tuple.Create(   "mf_05"        ,      new Func<bool>(() => vars.mf_05_MSS      ()     ), new Func<bool>(() => vars.mf_05_MSSR      ()   ))},
+        { "mf_06"      ,    Tuple.Create(   "mf_06"        ,      new Func<bool>(() => vars.mf_06_MSS      ()     ), new Func<bool>(() => vars.mf_06_MSSR      ()   ))},
         { "campaign_01",    Tuple.Create(   "campaign_01"  ,      new Func<bool>(() => vars.campaign_01_MSS()     ), new Func<bool>(() => vars.campaign_01_MSSR()   ))},
         { "campaign_02",    Tuple.Create(   "campaign_02"  ,      new Func<bool>(() => vars.campaign_02_MSS()     ), new Func<bool>(() => vars.campaign_02_MSSR()   ))},
         { "campaign_03",    Tuple.Create(   "campaign_03"  ,      new Func<bool>(() => vars.campaign_03_MSS()     ), new Func<bool>(() => vars.campaign_03_MSSR()   ))},
@@ -189,30 +197,8 @@ start
         { "campaign_19",    Tuple.Create(   "campaign_19"  ,      new Func<bool>(() => vars.campaign_19_MSS()     ), new Func<bool>(() => vars.campaign_19_MSSR()   ))},
         { "campaign_20",    Tuple.Create(   "campaign_20"  ,      new Func<bool>(() => vars.campaign_20_MSS()     ), new Func<bool>(() => vars.campaign_20_MSSR()   ))},
         { "campaign_21",    Tuple.Create(   "campaign_22"  ,      new Func<bool>(() => vars.campaign_21_MSS()     ), new Func<bool>(() => vars.campaign_21_MSSR()   ))},
-        { "mf_01"      ,    Tuple.Create(   "mf_01"        ,      new Func<bool>(() => vars.mf_01_MSS      ()     ), new Func<bool>(() => vars.mf_01_MSSR      ()   ))},
-        { "mf_02"      ,    Tuple.Create(   "mf_02"        ,      new Func<bool>(() => vars.mf_02_MSS      ()     ), new Func<bool>(() => vars.mf_02_MSSR      ()   ))},
-        { "mf_03"      ,    Tuple.Create(   "mf_03"        ,      new Func<bool>(() => vars.mf_03_MSS      ()     ), new Func<bool>(() => vars.mf_03_MSSR      ()   ))},
-        { "mf_04"      ,    Tuple.Create(   "mf_04"        ,      new Func<bool>(() => vars.mf_04_MSS      ()     ), new Func<bool>(() => vars.mf_04_MSSR      ()   ))},
-        { "mf_05"      ,    Tuple.Create(   "mf_05"        ,      new Func<bool>(() => vars.mf_05_MSS      ()     ), new Func<bool>(() => vars.mf_05_MSSR      ()   ))},
-        { "mf_06"      ,    Tuple.Create(   "mf_06"        ,      new Func<bool>(() => vars.mf_06_MSS      ()     ), new Func<bool>(() => vars.mf_06_MSSR      ()   ))},
     };
 
-
-    // Remove campaign entries if starting a F59 run. Helps split logic to be more efficient.
-    if
-    (
-        vars.GetLevelID() == "mf*"
-    )
-    {
-        foreach (var data in vars.StartSplitTable)
-        if
-        (
-            data.Value.Item1 == "campaign*"
-        )
-        {
-            vars.StartSplitTable.Remove(data);
-        }
-    }
     // Mission mode only
     // Start the timer when playerRef transitions from undefined (menu) to defined (in mission)
     return
@@ -357,7 +343,7 @@ init
     vars.campaign_19_MSS    = (Func<bool>)(() => {vars.started_campaign_19      = true; return true;});     vars.campaign_19_MSSR    = (Func<bool>)(() => {if(vars.started_campaign_19      == false){return true;}return false;});
     vars.campaign_20_MSS    = (Func<bool>)(() => {vars.started_campaign_20      = true; return true;});     vars.campaign_20_MSSR    = (Func<bool>)(() => {if(vars.started_campaign_20      == false){return true;}return false;});
     vars.campaign_21_MSS    = (Func<bool>)(() => {vars.started_campaign_21      = true; return true;});     vars.campaign_21_MSSR    = (Func<bool>)(() => {if(vars.started_campaign_21      == false){return true;}return false;});
-    vars.mf_01_MSS          = (Func<bool>)(() => {vars.started_mf_01            = true; return true;});     vars.mf_01_MSSR          = (Func<bool>)(() => {if(vars.started_mf_02            == false){return true;}return false;});
+    vars.mf_01_MSS          = (Func<bool>)(() => {vars.started_mf_01            = true; return true;});     vars.mf_01_MSSR          = (Func<bool>)(() => {if(vars.started_mf_01            == false){return true;}return false;});
     vars.mf_02_MSS          = (Func<bool>)(() => {vars.started_mf_02            = true; return true;});     vars.mf_02_MSSR          = (Func<bool>)(() => {if(vars.started_mf_02            == false){return true;}return false;});
     vars.mf_03_MSS          = (Func<bool>)(() => {vars.started_mf_03            = true; return true;});     vars.mf_03_MSSR          = (Func<bool>)(() => {if(vars.started_mf_03            == false){return true;}return false;});   
     vars.mf_04_MSS          = (Func<bool>)(() => {vars.started_mf_04            = true; return true;});     vars.mf_04_MSSR          = (Func<bool>)(() => {if(vars.started_mf_04            == false){return true;}return false;});
@@ -440,9 +426,14 @@ split
                 (data.Value.Item1 == vars.GetLevelID()) && data.Value.Item3() == true
             )
             {
-            return data.Value.Item2();
-            vars.StartSplitTable.Remove(data);
-            break;
+                print(data.Value.Item1);
+                return data.Value.Item2();
+                vars.StartSplitTable.Remove(data.Key); // This doesn't work, am I getting the syntax right?
+                break;
+            }
+            else
+            {
+                print(data.Value.Item1);
             }
         }
     }
