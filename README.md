@@ -13,16 +13,22 @@ When editing your splits in LiveSplit, if you have Project Wingman selected as y
 See: https://github.com/Hilimii/ProjectWingman_Autosplitter/issues for currently known issues.
 
 ## Tips for Usage
-It's generally good practice to ensure that your number of splits match the number of autosplits you expect to trigger during a run. For example:
+It's generally good practice to ensure that you match your splits to the number of autosplits you expect to trigger during a run. For example:
 ### Campaign Run - Vanilla
 Ensure that you have 21 splits, one for each mission.
 ### Campaign Run - F59
 Ensure that you have 6 splits, one for each mission.
+### Campaign Start Splits
+If you have this setting enabled, your split number will double for the entire campaign you are running.
+
+Vanilla: 21 --> 42 Splits
+
+F59: 6 --> 12 Splits
 ### Single Mission Runs
 Generally, you want one split. However, if you wish to gauge your pace at pivotal moments, it's okay to have additional manual splits. Just don't forget them!
 ### F59 4 - Tunnel Run
-For full runs of F59 mission 4 when you have the 'Tunnel Run' option ON, you should have 2 splits. This allows you to run the mission category and tunnel run category at once.
-## Chosing the Right Options
+For full runs of F59 mission 4 when you have the 'Tunnel Run' option ON, you should have 2 splits. This allows you to run the Express Lane and Tunnel Run categories simultaneously.
+## Choosing the Right Options
 When running full campaign runs, use the Campaign category. When running single mission runs, use mission mode. Ensure that you have only one of these options selected at a time.
 
 # Options
@@ -41,6 +47,10 @@ In Livesplit you can choose from the following options in the autosplitter:
 * Autosplits once at the end of each mission.
 * Autostarts when you select your difficulty to begin the campaign.
 * Autoresets whenever you start a new campaign, useful if you reset on mission 1 often. This will not work if you have completed a run or you have gold splits.
+## Campaign Start Splits
+* Triggers an additional split at the start of each mission. Once only.
+* Doubles your split count!!
+* Allows you to accurately measure and compare to IL run times whilst running campaign without any additional work.
 ### Campaign Mode - Crash Protection
 * Pauses your timer if you have not progressed beyond difficulty selection.
 * If your game crashes, your timer will be paused until you select 'Resume' to continue your campaign run.
