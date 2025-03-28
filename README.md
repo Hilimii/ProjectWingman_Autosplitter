@@ -47,7 +47,7 @@ In Livesplit you can choose from the following options in the autosplitter:
 * Autosplits once at the end of each mission.
 * Autostarts when you select your difficulty to begin the campaign.
 * Autoresets whenever you start a new campaign, useful if you reset on mission 1 often. This will not work if you have completed a run or you have gold splits.
-## Campaign Start Splits
+### Campaign Mode - Campaign Start Splits
 * Triggers an additional split at the start of each mission. Once only.
 * Doubles your split count!!
 * Allows you to accurately measure and compare to IL run times whilst running campaign without any additional work.
