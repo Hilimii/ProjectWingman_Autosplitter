@@ -3,8 +3,7 @@
 // By NitrogenCynic (https://www.speedrun.com/users/NitrogenCynic) and Hilimii (https://www.speedrun.com/users/Hilimii)
 
 // Added in this version:
-    // IGT Setting. Pauses when the player has no control over the plane. Mimics IGT timing for AC7.
-    // IgnoreTakeoffLanding setting. Applies the IGT setting to takeoff and landing sequences too.
+    // IGT Setting. Pauses when the player has no control over the plane, or when their time falls outside the remit of a IL run. Mimics IGT timing for AC7.
 //=====================================================================================================================================================================================================
 state("ProjectWingman-Win64-Shipping")
 // Defines pointers which are being read from game memory
