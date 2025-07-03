@@ -1,11 +1,10 @@
 //=====================================================================================================================================================================================================
-// Version: 1.4.0
+// Version: 1.5.0
 // By NitrogenCynic (https://www.speedrun.com/users/NitrogenCynic) and Hilimii (https://www.speedrun.com/users/Hilimii)
 
 // Added in this version:
-    // Tunnel run split function
-    // hasmissionstarted function
-    // Mission Start splits + accompanying functions and variables
+    // IGT Setting. Pauses when the player has no control over the plane. Mimics IGT timing for AC7.
+    // IgnoreTakeoffLanding setting. Applies the IGT setting to takeoff and landing sequences too.
 //=====================================================================================================================================================================================================
 state("ProjectWingman-Win64-Shipping")
 // Defines pointers which are being read from game memory
@@ -14,6 +13,7 @@ state("ProjectWingman-Win64-Shipping")
     byte missionComplete: "ProjectWingman-Win64-Shipping.exe", 0x093EFDC8, 0x0, 0x438; //2 normally, 3 when mission complete trigger has been activated. Found by Hilimii
     byte isPaused: "ProjectWingman-Win64-Shipping.exe", 0x95C00C4; //2 when unpaused, 3 when paused. Found by NitrogenCynic
     byte playerRef: "ProjectWingman-Win64-Shipping.exe", 0x95C3A28, 0x118, 0x320; // Reference to the player FlyingPawn, 0 when undefined (as in menus).
+    byte intoLevel: "ProjectWingman-Win64-Shipping.exe", 0x9150ED0, 0x0, 0x180, 0x658, 0x41F; // 1 When player is in mission, 0 otherwise. Also flips to 0 upon resets and deaths. 
 
     // A useful root object for finding a number of other in-game objects and variables.
     //byte WingmanInstance: "ProjectWingman-Win64-Shipping.exe", 0x9150ED0, 0x0, 0x180;
@@ -83,6 +83,11 @@ startup
         settings.Add("StartSplits", false, "Mission Start Splits", "Campaign");
             // Adds a split to the start of each mission. Each triggers only once.
                 settings.SetToolTip("StartSplits", "!!Doubles split count!! Triggers a split at the start of each mission, once only. Useful for comparing pace to IL mission times");
+            
+        // IGT Timer
+        settings.Add("IGT", false, "In Game Timer", "Campaign");
+            // Stops the timer if the player in not in mission
+                settings.SetToolTip("IGT", "!!NOT LEGAL FOR RUNS!! Pauses the timer whilst not flying in mission, or, if the mission has ended.");
 
     // Timer pausing
     settings.Add("EnablePause",true,"Pausing Stops Timer");
@@ -372,9 +377,15 @@ isLoading
     if
     (
         // Pausing - Pauses the timer if the player pauses during a mission (isPaused = 3)
+        // Applies to the pause setting and the IGT setting
         (
-            current.isPaused == 3 &&
-            settings["EnablePause"] == true
+            current.isPaused == 3
+            &&
+            (
+                settings["EnablePause"] == true
+                ||
+                settings["IGT"] == true
+            )
         )
         ||
         // Crash detection. Pauses timer if the player has not progressed beyond difficulty selection (onMissionSequence = 0)
@@ -383,6 +394,26 @@ isLoading
             &&
             settings["CrashProtection"] == true
         )
+        ||
+        // IG Timer. Pauses the timer if the player is not actively flying during a mission
+            // Checks if the player is in mission by comparing intoLevel and playerRef and seeing if either is undefined. If so, pause.
+            (
+                (
+                    (current.intoLevel == 0)
+                    ||
+                    (current.playerRef == 0)
+                )
+                ||
+                // Checks if the current mission has been completed (=3) and if the player is in mission. If so, pause.
+                (
+                    current.missionComplete == 3
+                    &&
+                    current.playerRef != 0
+                )
+                // Checks if the IGT setting is on
+                &&
+                settings["IGT"] == true
+            )
     )
     {
         return true;
