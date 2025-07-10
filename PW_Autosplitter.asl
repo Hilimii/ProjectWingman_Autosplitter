@@ -398,16 +398,18 @@ isLoading
             // Checks if the player is in mission by comparing intoLevel and playerRef and seeing if either is undefined. If so, pause.
             (
                 (
-                    (current.intoLevel == 0)
+                    (
+                        (current.intoLevel == 0)
+                        ||
+                        (current.playerRef == 0)
+                    )
                     ||
-                    (current.playerRef == 0)
-                )
-                ||
-                // Checks if the current mission has been completed (=3) and if the player is in mission. If so, pause.
-                (
-                    current.missionComplete == 3
-                    &&
-                    current.playerRef != 0
+                    // Checks if the current mission has been completed (=3) and if the player is in mission. If so, pause.
+                    (
+                        current.missionComplete == 3
+                        &&
+                        current.playerRef != 0
+                    )
                 )
                 // Checks if the IGT setting is on
                 &&
