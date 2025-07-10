@@ -19,15 +19,11 @@ Ensure that you have 21 splits, one for each mission.
 ### Campaign Run - F59
 Ensure that you have 6 splits, one for each mission.
 ### Campaign Start Splits
-If you have this setting enabled, your split number will double for the entire campaign you are running.
-
-Vanilla: 21 --> 42 Splits
-
-F59: 6 --> 12 Splits
+If you have this setting enabled, your split number will double for the entire campaign you are running. I.e. an additional split triggers at the start of each mission.
 ### Single Mission Runs
 Generally, you want one split. However, if you wish to gauge your pace at pivotal moments, it's okay to have additional manual splits. Just don't forget them!
-### F59 4 - Tunnel Run
-For full runs of F59 mission 4 when you have the 'Tunnel Run' option ON, you should have 2 splits. This allows you to run the Express Lane and Tunnel Run categories simultaneously.
+### F59 M4 - Express Lane & Tunnel Run
+For full runs of F59 mission 4 when you have the 'Tunnel Run' option ON, you should have 2 splits. This allows you to run the Express Lane and Tunnel Run categories simultaneously. If you are only running Tunnel Run, one split is plenty.
 ## Choosing the Right Options
 When running full campaign runs, use the Campaign category. When running single mission runs, use mission mode. Ensure that you have only one of these options selected at a time.
 
@@ -48,12 +44,18 @@ In Livesplit you can choose from the following options in the autosplitter:
 * Autostarts when you select your difficulty to begin the campaign.
 * Autoresets whenever you start a new campaign, useful if you reset on mission 1 often. This will not work if you have completed a run or you have gold splits.
 ### Campaign Mode - Campaign Start Splits
-* Triggers an additional split at the start of each mission. Once only.
+* Triggers an additional split at the start of each mission. Once only per run, even if you die, return to the hangar, or restart the mission.
 * Doubles your split count!!
-* Allows you to accurately measure and compare to IL run times whilst running campaign without any additional work.
+* Allows you to accurately measure and compare to IL run times whilst running a campaign category without any additional work. You will likely need to tinker with your Livesplit layout to make use of this information.
 ### Campaign Mode - Crash Protection
 * Pauses your timer if you have not progressed beyond difficulty selection.
-* If your game crashes, your timer will be paused until you select 'Resume' to continue your campaign run.
+* If your game closes, your timer will be paused until you select 'Resume' to continue your campaign run. This can sometimes take a few seconds to take effect.
+* This is best used when your game softlocks or hard freezes. Immediately ALT+F4 to close the game and pause your timer.
+* Requires you to be comparing against Game Time in Livesplit in order for this to work.
+### Campaign Mode - In Game Timer (IGT)
+* Pauses your timer when not in a mission, when not flying, and when you complete a mission. This includes all other sequences such as menus, cutscenes, briefings, debriefings, the hangar, takeoffs, and landings.
+* Effectively emulates the IGT method utilised in AC7 speedruns.
+* This timing method is NOT LEGAL for runs.
 * Requires you to be comparing against Game Time in Livesplit in order for this to work.
 ## Pausing Stops Timer
 * Pauses your timer whenever you pause the game during a mission.
