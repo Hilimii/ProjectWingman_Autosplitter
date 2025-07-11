@@ -4,10 +4,13 @@ Autosplitter for Project Wingman made by NitrogenCynic and Hilimii.
 Speedrun.com forum thread here: https://www.speedrun.com/project_wingman/forums/j9ro5
 
 # Installation
-### Manual
-Download the main .asl file. In Livesplit, edit your layout and add a scriptable autosplitter under the control suboption. Select the file you downloaded and it should be good to go! Please note that if an update is released, you will not be informed or automatically receive the new version.
-### LiveSplit
+### Within LiveSplit (Recommended)
 When editing your splits in LiveSplit, if you have Project Wingman selected as your game you will be able to activate the most recent release of the Autosplitter.
+
+<img width="843" height="218" alt="image" src="https://github.com/user-attachments/assets/63f07db2-f4e7-4150-86f1-db831a9a4491" />
+
+### Manual
+Download the main .asl file. In Livesplit, edit your layout and add a scriptable autosplitter under the control suboption. Select the file you downloaded, and it should be good to go! Please note that if an update is released, you will not be informed or automatically receive the new version.
 
 ## Issues
 See: https://github.com/Hilimii/ProjectWingman_Autosplitter/issues for currently known issues.
@@ -25,10 +28,16 @@ Generally, you want one split. However, if you wish to gauge your pace at pivota
 ### F59 M4 - Express Lane & Tunnel Run
 For full runs of F59 mission 4 when you have the 'Tunnel Run' option ON, you should have 2 splits. This allows you to run the Express Lane and Tunnel Run categories simultaneously. If you are only running Tunnel Run, one split is plenty.
 ## Choosing the Right Options
-When running full campaign runs, use the Campaign category. When running single mission runs, use mission mode. Ensure that you have only one of these options selected at a time.
+When running full campaign runs, use the Campaign mode in the autosplitter. When running single mission runs, use mission mode. Ensure that you have only one of these options selected at a time.
 
 # Options
-In Livesplit you can choose from the following options in the autosplitter:
+In Livesplit, when editing your splits, you can access the settings menu for the autosplitter:
+
+<img width="849" height="270" alt="image" src="https://github.com/user-attachments/assets/40214605-eb9d-45b0-80e3-1367d93b0a45" />
+
+In this settings menu, you can check various options depending on which kind of category you wish to run, and how you want timing and splits to behave.
+
+<img width="628" height="335" alt="image" src="https://github.com/user-attachments/assets/e5ca788a-837b-491a-90cc-d840e8fd682f" />
 
 ## Mission Mode
 * Autostarts the timer when gameplay begins, this is approximately 1.00s after pressing start to begin the mission.
